@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class YacontestHelperApplication {
+public class YaContestHelperApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(YacontestHelperApplication.class, args);
+        SpringApplication.run(YaContestHelperApplication.class, args);
     }
 
 }
