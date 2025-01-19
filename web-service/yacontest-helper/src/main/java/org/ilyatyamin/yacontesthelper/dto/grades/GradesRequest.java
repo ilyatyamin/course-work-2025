@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dto;
+package org.ilyatyamin.yacontesthelper.dto.grades;
 
 import lombok.AllArgsConstructor;
 
