@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: ${db_password}
+    driver-class-name: org.postgresql.Driver
+
+configs:
+  get-problem-url: https://api.contest.yandex.net/api/public/v2/contests/%s/problems
