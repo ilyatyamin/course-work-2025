@@ -11,7 +11,10 @@ import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
 import org.ilyatyamin.yacontesthelper.service.YaContestService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -29,7 +32,9 @@ public class GradesServiceImpl implements GradesService {
         var resultTable = submissionProcessorService.processSubmissionList(
                 submissionList,
                 problemList,
-                gradesRequest.participants()
+                gradesRequest.participants(),
+                gradesRequest.deadline() != null ? Optional.of(LocalDateTime.parse(gradesRequest.deadline(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                        : Optional.empty()
         );
 
         // TODO: после регистрации допилить userId
