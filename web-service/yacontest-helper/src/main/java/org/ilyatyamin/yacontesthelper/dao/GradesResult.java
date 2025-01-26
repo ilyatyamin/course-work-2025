@@ -1,15 +1,17 @@
 package org.ilyatyamin.yacontesthelper.dao;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Table(name = "grades_result")
-@Data
+@Getter
+@NoArgsConstructor
 public class GradesResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +22,10 @@ public class GradesResult {
     private LocalDateTime createdAt;
 
     private String payload;
+
+    public GradesResult(Long userId, String payload) {
+        this.userId = userId;
+        this.createdAt = LocalDateTime.now();
+        this.payload = payload;
+    }
 }
