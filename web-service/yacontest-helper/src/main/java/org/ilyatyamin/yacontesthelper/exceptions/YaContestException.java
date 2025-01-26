@@ -1,5 +1,8 @@
 package org.ilyatyamin.yacontesthelper.exceptions;
 
+import lombok.Getter;
+
+@Getter
 public class YaContestException extends RuntimeException {
     private final Integer code;
 
