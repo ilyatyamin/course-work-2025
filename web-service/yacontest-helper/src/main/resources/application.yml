@@ -2,8 +2,32 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: ${db_password}
+    password: db_password
     driver-class-name: org.postgresql.Driver
 
+  servlet:
+    multipart:
+      enabled: true
+
+  jpa:
+    hibernate.ddl-auto: update
+    properties.hibernate:
+      show_sql: true
+      format_sql: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  feign:
+    client:
+      config:
+        yaContestClient:
+          connectTimeout: 5000
+          readTimeout: 5000
+          loggerLevel: basic
+
 configs:
-  get-problem-url: https://api.contest.yandex.net/api/public/v2/contests/%s/problems
+  base-contest-url: https://api.contest.yandex.net/api/public/v2
+  get-problem-url: contests/{contestId}/problems
+
+  get-submission-list:
+    page-size: 128
+    url: https://api.contest.yandex.net/api/public/v2/contests/%s/submissions
