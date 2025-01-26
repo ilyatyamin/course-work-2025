@@ -21,6 +21,7 @@ public class GradesResult {
 
     private LocalDateTime createdAt;
 
+    @Column(columnDefinition="TEXT")
     private String payload;
 
     public GradesResult(Long userId, String payload) {
