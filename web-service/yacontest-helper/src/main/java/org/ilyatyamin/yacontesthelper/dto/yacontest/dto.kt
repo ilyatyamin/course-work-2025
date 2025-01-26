@@ -10,3 +10,24 @@ data class ContestProblem(
 data class GetProblemsResponse(
     val problems: List<ContestProblem>
 )
+
+data class ContestSubmission(
+    val author: String,
+    val authorId: Long,
+    val compiler: String,
+    val id: Long,
+    val memory: Long,
+    val problemAlias: String,
+    val problemId: String,
+    val score: Double,
+    val submissionTime: String,
+    val test: Long,
+    val time: Long,
+    val timeFromStart: Long,
+    val verdict: String
+)
+
+data class GetSubmissionListResponse(
+    val count: Long,
+    val submissions: List<ContestSubmission>
+)
