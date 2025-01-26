@@ -1,11 +1,11 @@
 package org.ilyatyamin.yacontesthelper.configs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
 
 public class BeanConfigs {
     @Bean
-    ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
+    public ErrorDecoder errorDecoder() {
+        return new CustomErrorDecoderFeign();
     }
 }
