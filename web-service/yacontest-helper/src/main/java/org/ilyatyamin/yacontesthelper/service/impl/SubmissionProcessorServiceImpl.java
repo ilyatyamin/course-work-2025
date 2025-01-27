@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
 import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,13 +33,26 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
 
         // fill table by submissions
         for (ContestSubmission submission : submissionList) {
-            if (deadline.isEmpty() || !isSubmissionDelayed(submission.getSubmissionTime(), deadline.get())) {
+            if (participants.contains(submission.getAuthor()) && (deadline.isEmpty() || !isSubmissionDelayed(submission.getSubmissionTime(), deadline.get()))) {
                 Double previousGrade = resultTable.get(submission.getProblemAlias()).get(submission.getAuthor());
-                if (previousGrade < submission.getScore()) {
+                if (previousGrade < submission.getScore() && !submission.getVerdict().equals("OK")) {
                     resultTable.get(submission.getProblemAlias()).replace(submission.getAuthor(), submission.getScore());
+                } else if (submission.getVerdict().equals("OK")) {
+                    resultTable.get(submission.getProblemAlias()).replace(submission.getAuthor(), 1.0);
                 }
             }
         }
+
+        // calculate total
+        Map<String, Double> totalResults = new HashMap<>();
+        for (String participant : participants) {
+            Double total = 0.0;
+            for (String problem : problemList) {
+                total += resultTable.get(problem).get(participant);
+            }
+            totalResults.put(participant, total);
+        }
+        resultTable.put("total", totalResults);
 
         return resultTable;
     }

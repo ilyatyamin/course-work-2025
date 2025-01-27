@@ -1,6 +1,7 @@
 package org.ilyatyamin.yacontesthelper.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.dao.GradesResult;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class GradesServiceImpl implements GradesService {
     private GradesResultRepository gradesResultRepository;
 
@@ -27,7 +29,10 @@ public class GradesServiceImpl implements GradesService {
     @Override
     public GradesResponse getGradesList(GradesRequest gradesRequest) {
         List<String> problemList = yaContestService.getListOfProblems(gradesRequest.contestId(), gradesRequest.yandexKey());
+        log.info("Got problem list for request: {}", problemList);
+
         List<ContestSubmission> submissionList = yaContestService.getSubmissionList(gradesRequest.contestId(), gradesRequest.yandexKey());
+        log.info("Got {} submissions for request", submissionList.size());
 
         var resultTable = submissionProcessorService.processSubmissionList(
                 submissionList,
