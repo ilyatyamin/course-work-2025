@@ -8,6 +8,7 @@ import org.ilyatyamin.yacontesthelper.service.impl.YaContestServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class YaContestServiceTest {
     @Mock
     private ContestFeignClient contestFeignClient = Mockito.mock(ContestFeignClient.class);
+
+    @Value("${configs.get-submission-list.page-size}")
+    private int getSubmissionListPageSize;
 
     @Test
     void testGetListOfProblems() {
@@ -49,12 +53,12 @@ public class YaContestServiceTest {
             ContestSubmission generated = generateSubmission(aliases.get(i));
             expectedSubmissionList.add(generated);
 
-            Mockito.when(contestFeignClient.getListOfSubmissionsByPage(contestId, authKey, i + 1, 1))
+            Mockito.when(contestFeignClient.getListOfSubmissionsByPage(contestId, String.format("OAuth %s", authKey), i + 1, getSubmissionListPageSize))
                     .thenReturn(new GetSubmissionListResponse(1, List.of(generated)));
         }
-        Mockito.when(contestFeignClient.getListOfSubmissionsByPage(contestId, authKey, 4, 1))
+        Mockito.when(contestFeignClient.getListOfSubmissionsByPage(contestId, String.format("OAuth %s", authKey), 4, getSubmissionListPageSize))
                 .thenReturn(new GetSubmissionListResponse(1, List.of()));
-        List<ContestSubmission> result = yaContestService.getSubmissionList(contestId, String.format("OAuth %s", authKey));
+        List<ContestSubmission> result = yaContestService.getSubmissionList(contestId, authKey);
 
         assertThat(result).isEqualTo(expectedSubmissionList);
     }
