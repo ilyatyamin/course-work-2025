@@ -1,20 +1,27 @@
 package org.ilyatyamin.yacontesthelper.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.dao.GradesResult;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
 import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
+import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
 import org.ilyatyamin.yacontesthelper.repository.GradesResultRepository;
 import org.ilyatyamin.yacontesthelper.service.GradesService;
 import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
 import org.ilyatyamin.yacontesthelper.service.YaContestService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -25,6 +32,7 @@ public class GradesServiceImpl implements GradesService {
 
     private YaContestService yaContestService;
     private SubmissionProcessorService submissionProcessorService;
+    private ExcelFormatterServiceImpl excelFormatterService;
 
     @Override
     public GradesResponse getGradesList(GradesRequest gradesRequest) {
@@ -48,5 +56,23 @@ public class GradesServiceImpl implements GradesService {
         );
 
         return new GradesResponse(result.getId(), resultTable);
+    }
+
+    @Override
+    public byte[] generateGradesTable(Long tableId) {
+        // TODO: проверка что таблица с таким tableId доступна вообще данному пользователю
+        if (!gradesResultRepository.existsById(tableId)) {
+            throw new YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.GRADES_TABLE_NOT_FOUND.getMessage());
+        }
+        GradesResult result = gradesResultRepository.getReferenceById(tableId);
+        ObjectMapper mapper = new ObjectMapper();
+
+        TypeReference<Map<String, Map<String, Double>>> typeRef = new TypeReference<>() {};
+        try {
+            Map<String, Map<String, Double>> grades = mapper.readValue(result.getPayload(), typeRef);
+            return excelFormatterService.generateGradesTable(grades);
+        } catch (JsonProcessingException e) {
+            throw new YaContestException(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
+        }
     }
 }

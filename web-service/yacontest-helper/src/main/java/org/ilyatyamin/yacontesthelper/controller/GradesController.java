@@ -4,21 +4,37 @@ import lombok.AllArgsConstructor;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
 import org.ilyatyamin.yacontesthelper.service.GradesService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/grades")
 @AllArgsConstructor
 public class GradesController {
     private GradesService gradesService;
 
-    @PostMapping("/grades")
+    @PostMapping
     ResponseEntity<GradesResponse> getGrades(@RequestBody GradesRequest gradesRequest) {
         GradesResponse response = gradesService.getGradesList(gradesRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{tableId}/xlsx")
+    ResponseEntity<byte[]> getGradesExcelTable(@PathVariable Long tableId) {
+        byte[] excelSheet = gradesService.generateGradesTable(tableId);
+
+        String fileName = String.format("attachment; filename table_%s.xlsx", tableId);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, fileName)
+                .body(excelSheet);
     }
 }

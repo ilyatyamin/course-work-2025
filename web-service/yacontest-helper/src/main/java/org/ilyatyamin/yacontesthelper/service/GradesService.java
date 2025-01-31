@@ -5,4 +5,6 @@ import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
 
 public interface GradesService {
     GradesResponse getGradesList(GradesRequest gradesRequest);
+
+    byte[] generateGradesTable(Long tableId);
 }
