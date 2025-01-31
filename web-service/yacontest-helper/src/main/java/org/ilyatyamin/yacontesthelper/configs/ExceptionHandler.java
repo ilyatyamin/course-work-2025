@@ -13,4 +13,11 @@ public class ExceptionHandler {
                 .status(exception.getCode())
                 .body(new ErrorResponse(exception.getCode(), exception.getMessage()));
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorResponse> baseException(Exception exception) {
+        return ResponseEntity
+                .status(500)
+                .body(new ErrorResponse(500, exception.getMessage()));
+    }
 }
