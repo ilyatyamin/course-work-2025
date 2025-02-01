@@ -1,6 +1,7 @@
 services:
   backend_spring:
     container_name: backend_spring
+#    restart: on-failure
     build:
       context: ./web-service/yacontest-helper/.
       dockerfile: Dockerfile
