@@ -1,8 +1,5 @@
 package org.ilyatyamin.yacontesthelper.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -52,7 +48,7 @@ public class GradesServiceImpl implements GradesService {
 
         // TODO: после регистрации допилить userId
         GradesResult result = gradesResultRepository.saveAndFlush(
-                new GradesResult(null, resultTable.toString())
+                new GradesResult(null, resultTable)
         );
 
         return new GradesResponse(result.getId(), resultTable);
@@ -65,14 +61,7 @@ public class GradesServiceImpl implements GradesService {
             throw new YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.GRADES_TABLE_NOT_FOUND.getMessage());
         }
         GradesResult result = gradesResultRepository.getReferenceById(tableId);
-        ObjectMapper mapper = new ObjectMapper();
 
-        TypeReference<Map<String, Map<String, Double>>> typeRef = new TypeReference<>() {};
-        try {
-            Map<String, Map<String, Double>> grades = mapper.readValue(result.getPayload(), typeRef);
-            return excelFormatterService.generateGradesTable(grades);
-        } catch (JsonProcessingException e) {
-            throw new YaContestException(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage());
-        }
+        return excelFormatterService.generateGradesTable(result.getPayload());
     }
 }

@@ -8,6 +8,7 @@ import org.ilyatyamin.yacontesthelper.service.ExcelFormatterService;
 import org.springframework.stereotype.Service;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,6 @@ public class ExcelFormatterServiceImpl implements ExcelFormatterService {
     private final static String SHEET_NAME = "Grades";
 
     @Override
-    @SneakyThrows
     public byte[] generateGradesTable(Map<String, Map<String, Double>> grades) {
         List<String> tasks = grades.keySet().stream().sorted().toList();
         List<String> students = new ArrayList<>();
@@ -31,6 +31,8 @@ public class ExcelFormatterServiceImpl implements ExcelFormatterService {
 
         try (HSSFWorkbook table = createExcelTable(tasks, students, grades)) {
             return table.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
