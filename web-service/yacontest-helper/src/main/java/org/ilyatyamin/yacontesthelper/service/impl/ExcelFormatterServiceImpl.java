@@ -1,13 +1,14 @@
 package org.ilyatyamin.yacontesthelper.service.impl;
 
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ilyatyamin.yacontesthelper.service.ExcelFormatterService;
 import org.springframework.stereotype.Service;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +30,26 @@ public class ExcelFormatterServiceImpl implements ExcelFormatterService {
             }
         }
 
-        try (HSSFWorkbook table = createExcelTable(tasks, students, grades)) {
-            return table.getBytes();
+        try (Workbook table = createExcelTable(tasks, students, grades)) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            table.write(byteArrayOutputStream);
+            byte[] excelBytes = byteArrayOutputStream.toByteArray();
+            table.close();
+
+            return excelBytes;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public HSSFWorkbook createExcelTable(List<String> tasks, List<String> students,
-                                         Map<String, Map<String, Double>> grades) {
-        HSSFWorkbook table = new HSSFWorkbook();
-        HSSFSheet sheet = table.createSheet(SHEET_NAME);
+    public Workbook createExcelTable(List<String> tasks, List<String> students,
+                                     Map<String, Map<String, Double>> grades) {
+        XSSFWorkbook table = new XSSFWorkbook();
+        Sheet sheet = table.createSheet(SHEET_NAME);
 
         // init header
         int rowCounter = 0;
-        HSSFRow row = sheet.createRow(rowCounter);
+        Row row = sheet.createRow(rowCounter);
         row.createCell(0).setCellValue("");
 
         int columnCounter = 1;
@@ -61,12 +67,12 @@ public class ExcelFormatterServiceImpl implements ExcelFormatterService {
         return table;
     }
 
-    private void fillTableByRow(HSSFSheet sheet,
+    private void fillTableByRow(Sheet sheet,
                                 int rowCounter,
                                 List<String> tasks,
                                 String student,
                                 Map<String, Map<String, Double>> grades) {
-        HSSFRow row = sheet.createRow(rowCounter);
+        Row row = sheet.createRow(rowCounter);
         row.createCell(0).setCellValue(student);
 
         int columnCounter = 1;

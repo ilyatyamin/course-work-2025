@@ -29,12 +29,13 @@ public class GradesController {
     ResponseEntity<byte[]> getGradesExcelTable(@PathVariable Long tableId) {
         byte[] excelSheet = gradesService.generateGradesTable(tableId);
 
-        String fileName = String.format("attachment; filename table_%s.xlsx", tableId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "data.xlsx");
 
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, fileName)
+                .headers(headers)
                 .body(excelSheet);
     }
 }
