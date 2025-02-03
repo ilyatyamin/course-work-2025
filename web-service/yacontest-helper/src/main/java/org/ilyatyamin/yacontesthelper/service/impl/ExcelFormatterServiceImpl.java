@@ -6,11 +6,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ilyatyamin.yacontesthelper.service.ExcelFormatterService;
+import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,17 +18,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class ExcelFormatterServiceImpl implements ExcelFormatterService {
     private final static String SHEET_NAME = "Grades";
+    private final SubmissionProcessorService submissionProcessorService;
 
     @Override
     public byte[] generateGradesTable(Map<String, Map<String, Double>> grades) {
-        List<String> tasks = grades.keySet().stream().sorted().toList();
-        List<String> students = new ArrayList<>();
-        if (!grades.isEmpty()) {
-            for (var entry : grades.entrySet()) {
-                students.addAll(entry.getValue().keySet());
-                break;
-            }
-        }
+        var lists = submissionProcessorService.getKeysAndValuesInMap(grades);
+        List<String> tasks = lists.getFirst();
+        List<String> students = lists.getSecond();
 
         try (Workbook table = createExcelTable(tasks, students, grades)) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

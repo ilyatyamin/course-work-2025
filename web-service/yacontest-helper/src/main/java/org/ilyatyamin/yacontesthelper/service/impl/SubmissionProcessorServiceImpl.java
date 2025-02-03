@@ -1,5 +1,6 @@
 package org.ilyatyamin.yacontesthelper.service.impl;
 
+import kotlin.Pair;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
@@ -8,10 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -56,6 +54,36 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
 
         return resultTable;
     }
+
+    @Override
+    public Map<String, Double> getOkPercentageForTasks(Map<String, Map<String, Double>> submissions) {
+        Map<String, Double> totalResults = new HashMap<>();
+        for (String problem : submissions.keySet()) {
+            if (problem.equals("total")) continue;
+
+            Map<String, Double> percentage = submissions.get(problem);
+            Double totalSolved = 0.0;
+            for (Double val : percentage.values()) {
+                totalSolved += val;
+            }
+            totalResults.put(problem, (totalSolved / percentage.size()) * 100);
+        }
+        return totalResults;
+    }
+
+    @Override
+    public Pair<List<String>, List<String>> getKeysAndValuesInMap(Map<String, Map<String, Double>> grades) {
+        List<String> tasks = grades.keySet().stream().sorted().toList();
+        List<String> students = new ArrayList<>();
+        if (!grades.isEmpty()) {
+            for (var entry : grades.entrySet()) {
+                students.addAll(entry.getValue().keySet());
+                break;
+            }
+        }
+        return new Pair<>(tasks, students);
+    }
+
 
     private Boolean isSubmissionDelayed(String authorSubmissionTime,
                                         LocalDateTime deadline) {

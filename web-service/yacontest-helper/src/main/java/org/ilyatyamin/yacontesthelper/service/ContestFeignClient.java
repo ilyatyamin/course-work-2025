@@ -21,4 +21,9 @@ public interface ContestFeignClient {
                                                          @RequestHeader("Authorization") String authHeader,
                                                          @PathVariable Integer pageId,
                                                          @PathVariable Integer pageSize);
+
+    @GetMapping(value = "/contests/{contestId}/submissions/{submissionId}/source")
+    String getSubmissionCode(@PathVariable String contestId,
+                             @PathVariable String submissionId,
+                             @RequestHeader("Authorization") String authHeader);
 }

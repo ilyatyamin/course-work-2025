@@ -11,6 +11,7 @@ import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
 import org.ilyatyamin.yacontesthelper.repository.GradesResultRepository;
 import org.ilyatyamin.yacontesthelper.service.GradesService;
 import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
+import org.ilyatyamin.yacontesthelper.service.UtilsService;
 import org.ilyatyamin.yacontesthelper.service.YaContestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class GradesServiceImpl implements GradesService {
     private YaContestService yaContestService;
     private SubmissionProcessorService submissionProcessorService;
     private ExcelFormatterServiceImpl excelFormatterService;
+    private UtilsService utilsService;
 
     @Override
     public GradesResponse getGradesList(GradesRequest gradesRequest) {
@@ -42,8 +44,7 @@ public class GradesServiceImpl implements GradesService {
                 submissionList,
                 problemList,
                 gradesRequest.participants(),
-                gradesRequest.deadline() != null ? Optional.of(LocalDateTime.parse(gradesRequest.deadline(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                        : Optional.empty()
+                utilsService.processLocalDateTime(gradesRequest.deadline())
         );
 
         // TODO: после регистрации допилить userId

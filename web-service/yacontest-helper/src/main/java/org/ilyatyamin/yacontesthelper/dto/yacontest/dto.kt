@@ -31,3 +31,8 @@ data class GetSubmissionListResponse(
     val count: Long,
     val submissions: List<ContestSubmission>
 )
+
+data class ContestSubmissionWithCode(
+    var submission: ContestSubmission,
+    var code: String?
+)
