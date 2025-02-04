@@ -1,5 +1,11 @@
 package org.ilyatyamin.yacontesthelper.service.impl;
 
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.itextpdf.html2pdf.HtmlConverter;
 import lombok.AllArgsConstructor;
 import org.ilyatyamin.yacontesthelper.dto.report.ReportRequest;
 import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
@@ -9,7 +15,11 @@ import org.ilyatyamin.yacontesthelper.utils.HeaderLevel;
 import org.ilyatyamin.yacontesthelper.utils.MarkdownFormatter;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,10 +49,17 @@ public class ReportServiceImpl implements ReportService {
                 utilsService.processLocalDateTime(request.getDeadline())
         );
         Map<String, Double> submissionStatsOk = submissionProcessorService.getOkPercentageForTasks(grades);
-
         String markdownFormat = getMarkdownReport(request, grades, submissionStatsOk, codeSubmissions);
 
-        return markdownFormat.getBytes();
+        switch (request.getSaveFormat()) {
+            case MD -> {
+                return markdownFormat.getBytes();
+            }
+            case PDF -> {
+                return getPDFReport(markdownFormat);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + request.getSaveFormat());
+        }
     }
 
     @Override
@@ -50,9 +67,11 @@ public class ReportServiceImpl implements ReportService {
                                     Map<String, Map<String, Double>> totalGrades,
                                     Map<String, Double> submissionStatsOk,
                                     List<ContestSubmissionWithCode> codeSubmissions) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG);
+
         MarkdownFormatter format = MarkdownFormatter.create()
                 .addHeader("Отчет по посылкам", HeaderLevel.FIRST)
-                .addHeader(String.format("Сформирован %s для контеста с id #%s", LocalDateTime.now(), request.getContestId()), HeaderLevel.SECOND)
+                .addHeader(String.format("Сформирован %s для контеста с id #%s", formatter.format(LocalDateTime.now()), request.getContestId()), HeaderLevel.SECOND)
                 .addText(String.format("Крайний срок сдачи: %s", request.getDeadline()))
                 .addHeader("Результаты", HeaderLevel.THIRD)
                 .addTable(totalGrades)
@@ -60,6 +79,7 @@ public class ReportServiceImpl implements ReportService {
                 .addOneDimTable(submissionStatsOk)
                 .addHeader("Исходные коды посылок со статусом OK: ", HeaderLevel.SECOND);
 
+        // TODO: планировались графики. Как их встроить?
         for (ContestSubmissionWithCode subm : codeSubmissions) {
             if (subm.getSubmission().getVerdict().equals("OK")) {
                 format.addText(String.format("id=%s. Автор=%s. Задача #%s. Вердикт #%s",
@@ -70,6 +90,8 @@ public class ReportServiceImpl implements ReportService {
                 format.addCode(subm.getCode());
             }
         }
+
+        // TODO: планировалась проверка на плагиат. Как встроить?
 
         return format.get();
     }
@@ -86,7 +108,22 @@ public class ReportServiceImpl implements ReportService {
 
         return submissions.stream()
                 .map(transfromFunction)
-                .limit(10)
+                .limit(10) // todo убрать
                 .toList();
+    }
+
+    private byte[] getPDFReport(String markdownReport) {
+        MutableDataSet options = new MutableDataSet();
+        options.set(Parser.EXTENSIONS, List.of(TablesExtension.create()));
+
+        Parser parser = Parser.builder(options).build();
+        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+
+        Node htmlReport = parser.parse(markdownReport);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        HtmlConverter.convertToPdf(renderer.render(htmlReport), baos);
+        return baos.toByteArray();
     }
 }

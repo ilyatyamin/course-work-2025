@@ -21,7 +21,9 @@ public class ReportController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "report.md");
+        String fileName = String.format("report.%s", request.getSaveFormat().name().toLowerCase());
+
+        headers.setContentDispositionFormData("attachment", fileName);
 
         return ResponseEntity
                 .ok()
