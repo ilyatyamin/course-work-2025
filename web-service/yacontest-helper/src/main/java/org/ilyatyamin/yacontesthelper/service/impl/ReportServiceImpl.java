@@ -19,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -108,7 +107,6 @@ public class ReportServiceImpl implements ReportService {
 
         return submissions.stream()
                 .map(transfromFunction)
-                .limit(10) // todo убрать
                 .toList();
     }
 
