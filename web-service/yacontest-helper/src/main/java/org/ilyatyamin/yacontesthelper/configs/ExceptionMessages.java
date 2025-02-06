@@ -11,6 +11,7 @@ public enum ExceptionMessages {
     NO_ACCESS_TO_CONTEST("No access to this contest."),
     CONTEST_NOT_FOUND("Contest with this id not found."),
     GRADES_TABLE_NOT_FOUND("Grades table with this id not found."),
+    GOOGLE_SHEETS_NOT_FOUND("Google sheets with this id not found."),
     ;
 
     private final String message;
