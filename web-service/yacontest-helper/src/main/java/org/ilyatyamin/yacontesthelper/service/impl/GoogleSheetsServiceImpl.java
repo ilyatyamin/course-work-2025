@@ -10,14 +10,21 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
+import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
 import org.ilyatyamin.yacontesthelper.service.GoogleSheetsService;
 import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
 
 @AllArgsConstructor
+@Service
+@Slf4j
 public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     private static final String APPLICATION_NAME = "YaContestHelper--GoogleSheetsAPI";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -30,6 +37,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                                        final String spreadsheetName,
                                        final String sheetName,
                                        final Map<K, Map<V, M>> results) {
+
         var lists = submissionProcessorService.getKeysAndValuesInMap(results);
         List<K> keys = lists.getFirst();
         List<V> keysInValues = lists.getSecond();
@@ -38,26 +46,32 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
             Sheets userCatalog = getSpreadsheets(credentials);
             if (isSpreadSheetExists(userCatalog, spreadsheetName)) {
                 Integer listIndex = getListIndexInSpreadsheet(userCatalog, spreadsheetName, sheetName);
+                if (listIndex == -1) {
+                    createNewSheet(userCatalog, spreadsheetName, sheetName);
+                    listIndex = getListIndexInSpreadsheet(userCatalog, spreadsheetName, sheetName);
+                }
 
                 int rowCounter = 0;
-                if (listIndex != -1) {
-                    List<String> firstData = new ArrayList<>();
-                    firstData.add(" ");
-                    firstData.addAll(keys.stream().map(K::toString).toList());
 
-                    writeDataInRange(userCatalog, firstData, spreadsheetName, listIndex, rowCounter, COLUMN_START_INDEX);
-                    ++rowCounter;
+                List<String> firstData = new ArrayList<>();
+                firstData.add(" ");
+                firstData.addAll(keys.stream().map(K::toString).toList());
 
-                    for (V value : keysInValues) {
-                        List<String> data = new ArrayList<>();
-                        data.add(value.toString());
-                        for (K key : keys) {
-                            data.add(results.get(key).get(value).toString());
-                        }
-                        writeDataInRange(userCatalog, data, spreadsheetName, listIndex, rowCounter, COLUMN_START_INDEX);
-                        ++rowCounter;
+                writeDataInRange(userCatalog, firstData, spreadsheetName, listIndex, rowCounter, COLUMN_START_INDEX);
+                ++rowCounter;
+
+                for (V value : keysInValues) {
+                    List<String> data = new ArrayList<>();
+                    data.add(value.toString());
+                    for (K key : keys) {
+                        data.add(results.get(key).get(value).toString());
                     }
+                    writeDataInRange(userCatalog, data, spreadsheetName, listIndex, rowCounter, COLUMN_START_INDEX);
+                    ++rowCounter;
                 }
+            } else {
+                throw new YaContestException(HttpStatus.NOT_FOUND.value(),
+                        ExceptionMessages.GOOGLE_SHEETS_NOT_FOUND.getMessage());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -85,7 +99,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                 }
                 ++index;
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         return -1;
     }
 
@@ -95,12 +110,35 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
         return GoogleCredential.fromStream(serviceAccountStream).createScoped(SCOPES);
     }
 
+
     private Sheets getSpreadsheets(String credentials) throws GeneralSecurityException, IOException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY,
                 getCredentials(credentials))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+    }
+
+    private void createNewSheet(Sheets service, String spreadsheetId, String sheetName) {
+        try {
+            SheetProperties sheetProperties = new SheetProperties();
+            sheetProperties.setTitle(sheetName);
+
+            AddSheetRequest addSheetRequest = new AddSheetRequest();
+            addSheetRequest.setProperties(sheetProperties);
+
+            Request request = new Request();
+            request.setAddSheet(addSheetRequest);
+
+            BatchUpdateSpreadsheetRequest batchRequest = new BatchUpdateSpreadsheetRequest();
+            batchRequest.setRequests(Collections.singletonList(request));  // Use singletonList for a single request
+
+            // 5. Execute the request.
+            service.spreadsheets().batchUpdate(spreadsheetId, batchRequest).execute();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private <T> void writeDataInRange(Sheets service, List<T> data,
