@@ -1,6 +1,7 @@
 package org.ilyatyamin.yacontesthelper.controller;
 
 import lombok.AllArgsConstructor;
+import org.ilyatyamin.yacontesthelper.dto.grades.GoogleSheetsRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
 import org.ilyatyamin.yacontesthelper.service.GradesService;
@@ -37,5 +38,12 @@ public class GradesController {
                 .ok()
                 .headers(headers)
                 .body(excelSheet);
+    }
+
+    @PostMapping("/{tableId}/googleSheets")
+    ResponseEntity<Void> getGradesGoogleSheets(@PathVariable Long tableId,
+                                               @RequestBody GoogleSheetsRequest request) {
+        gradesService.writeToGoogleSheets(tableId, request);
+        return ResponseEntity.ok().build();
     }
 }

@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.dao.GradesResult;
+import org.ilyatyamin.yacontesthelper.dto.grades.GoogleSheetsRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesRequest;
 import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
 import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
 import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
 import org.ilyatyamin.yacontesthelper.repository.GradesResultRepository;
-import org.ilyatyamin.yacontesthelper.service.GradesService;
-import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
-import org.ilyatyamin.yacontesthelper.service.UtilsService;
-import org.ilyatyamin.yacontesthelper.service.YaContestService;
+import org.ilyatyamin.yacontesthelper.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +28,7 @@ public class GradesServiceImpl implements GradesService {
     private YaContestService yaContestService;
     private SubmissionProcessorService submissionProcessorService;
     private ExcelFormatterServiceImpl excelFormatterService;
+    private GoogleSheetsService googleSheetsService;
     private UtilsService utilsService;
 
     @Override
@@ -64,5 +63,21 @@ public class GradesServiceImpl implements GradesService {
         GradesResult result = gradesResultRepository.getReferenceById(tableId);
 
         return excelFormatterService.generateGradesTable(result.getPayload());
+    }
+
+    @Override
+    public void writeToGoogleSheets(Long tableId, GoogleSheetsRequest request) {
+        // TODO: проверка что таблица с таким tableId доступна вообще данному пользователю
+        if (!gradesResultRepository.existsById(tableId)) {
+            throw new YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.GRADES_TABLE_NOT_FOUND.getMessage());
+        }
+        GradesResult result = gradesResultRepository.getReferenceById(tableId);
+
+        googleSheetsService.writeToSheet(
+                request.googleServiceAccountCredentials(),
+                request.spreadsheetUrl(),
+                request.listName(),
+                result.getPayload()
+        );
     }
 }
