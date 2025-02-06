@@ -72,9 +72,9 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
     }
 
     @Override
-    public Pair<List<String>, List<String>> getKeysAndValuesInMap(Map<String, Map<String, Double>> grades) {
-        List<String> tasks = grades.keySet().stream().sorted().toList();
-        List<String> students = new ArrayList<>();
+    public <K, V, M> Pair<List<K>, List<V>> getKeysAndValuesInMap(Map<K, Map<V, M>> grades) {
+        List<K> tasks = grades.keySet().stream().sorted().toList();
+        List<V> students = new ArrayList<>();
         if (!grades.isEmpty()) {
             for (var entry : grades.entrySet()) {
                 students.addAll(entry.getValue().keySet());

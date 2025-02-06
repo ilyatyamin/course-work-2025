@@ -17,5 +17,5 @@ public interface SubmissionProcessorService {
 
     Map<String, Double> getOkPercentageForTasks(Map<String, Map<String, Double>> submissions);
 
-    Pair<List<String>, List<String>> getKeysAndValuesInMap(Map<String, Map<String, Double>> grades);
+    <K, V, M> Pair<List<K>, List<V>> getKeysAndValuesInMap(Map<K, Map<V, M>> grades);
 }
