@@ -1,6 +1,5 @@
-package org.ilyatyamin.yacontesthelper.service.impl;
+package org.ilyatyamin.yacontesthelper.utils;
 
-import org.ilyatyamin.yacontesthelper.service.UtilsService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

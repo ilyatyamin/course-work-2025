@@ -1,10 +1,10 @@
-package org.ilyatyamin.yacontesthelper.controller;
+package org.ilyatyamin.yacontesthelper.grades.controller;
 
 import lombok.AllArgsConstructor;
-import org.ilyatyamin.yacontesthelper.dto.grades.GoogleSheetsRequest;
-import org.ilyatyamin.yacontesthelper.dto.grades.GradesRequest;
-import org.ilyatyamin.yacontesthelper.dto.grades.GradesResponse;
-import org.ilyatyamin.yacontesthelper.service.GradesService;
+import org.ilyatyamin.yacontesthelper.grades.dto.GoogleSheetsRequest;
+import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequest;
+import org.ilyatyamin.yacontesthelper.grades.dto.GradesResponse;
+import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

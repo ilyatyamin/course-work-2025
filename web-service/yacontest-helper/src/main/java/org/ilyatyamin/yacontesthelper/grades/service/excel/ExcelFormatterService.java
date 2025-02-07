@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.service;
+package org.ilyatyamin.yacontesthelper.grades.service.excel;
 
 import java.util.Map;
 

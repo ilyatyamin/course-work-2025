@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.service.impl;
+package org.ilyatyamin.yacontesthelper.grades.service.sheets;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -13,8 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
-import org.ilyatyamin.yacontesthelper.service.GoogleSheetsService;
-import org.ilyatyamin.yacontesthelper.service.SubmissionProcessorService;
+import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

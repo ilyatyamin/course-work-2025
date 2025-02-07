@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dto.grades;
+package org.ilyatyamin.yacontesthelper.grades.dto;
 
 import java.util.Map;
 

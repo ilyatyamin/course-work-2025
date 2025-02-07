@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dto.grades;
+package org.ilyatyamin.yacontesthelper.grades.dto;
 
 import javax.annotation.Nullable;
 import java.util.List;

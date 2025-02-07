@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.service;
+package org.ilyatyamin.yacontesthelper.utils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

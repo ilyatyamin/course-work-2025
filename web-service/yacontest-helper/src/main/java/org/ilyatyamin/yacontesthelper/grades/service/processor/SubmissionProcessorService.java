@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.service;
+package org.ilyatyamin.yacontesthelper.grades.service.processor;
 
 import kotlin.Pair;
 import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;

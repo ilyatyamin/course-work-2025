@@ -1,9 +1,7 @@
-package org.ilyatyamin.yacontesthelper.dao;
+package org.ilyatyamin.yacontesthelper.grades.dao;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
