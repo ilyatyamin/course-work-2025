@@ -1,7 +1,7 @@
 package org.ilyatyamin.yacontesthelper.report.controller;
 
 import lombok.AllArgsConstructor;
-import org.ilyatyamin.yacontesthelper.dto.report.ReportRequest;
+import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest;
 import org.ilyatyamin.yacontesthelper.report.service.ReportService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
