@@ -50,6 +50,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                     createNewSheet(userCatalog, spreadsheetName, sheetName);
                     listIndex = getListIndexInSpreadsheet(userCatalog, spreadsheetName, sheetName);
                 }
+                log.warn("listIndex = {}", listIndex.toString());
 
                 int rowCounter = 0;
 
@@ -92,12 +93,10 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                                              String listName) {
         try {
             List<Sheet> sheetWithName = userCatalog.spreadsheets().get(spreadSheetName).execute().getSheets();
-            int index = 0;
             for (Sheet sheet : sheetWithName) {
                 if (sheet.getProperties().getTitle().equals(listName)) {
-                    return index;
+                    return sheet.getProperties().getSheetId();
                 }
-                ++index;
             }
         } catch (IOException ignored) {
         }
@@ -149,6 +148,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                 .map(value -> new CellData()
                         .setUserEnteredValue(new ExtendedValue().setStringValue(value.toString()))
                 ).toList();
+
+        log.warn("spreadsheetId = {}, sheetIndex = {}, rowIndex = {}, columnIndex = {}", spreadSheetId, sheetIndex, rowIndex, columnIndex);
 
         requests.add(new Request()
                 .setUpdateCells(new UpdateCellsRequest()
