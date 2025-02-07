@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dao;
+package org.ilyatyamin.yacontesthelper.security.dao;
 
 import jakarta.persistence.*;
 import lombok.Data;

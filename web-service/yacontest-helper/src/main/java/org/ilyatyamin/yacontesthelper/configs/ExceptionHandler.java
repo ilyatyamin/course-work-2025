@@ -1,8 +1,8 @@
 package org.ilyatyamin.yacontesthelper.configs;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ilyatyamin.yacontesthelper.dto.ErrorResponse;
-import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
+import org.ilyatyamin.yacontesthelper.error.ErrorResponse;
+import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 

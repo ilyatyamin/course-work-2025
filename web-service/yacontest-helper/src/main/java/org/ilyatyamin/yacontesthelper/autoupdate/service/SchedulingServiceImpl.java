@@ -1,10 +1,9 @@
-package org.ilyatyamin.yacontesthelper.service.impl;
+package org.ilyatyamin.yacontesthelper.autoupdate.service;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.ilyatyamin.yacontesthelper.dto.scheduling.AutoUpdateRequest;
-import org.ilyatyamin.yacontesthelper.repository.UpdateTaskRepository;
-import org.ilyatyamin.yacontesthelper.service.SchedulingService;
+import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
+import org.ilyatyamin.yacontesthelper.autoupdate.repository.UpdateTaskRepository;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 

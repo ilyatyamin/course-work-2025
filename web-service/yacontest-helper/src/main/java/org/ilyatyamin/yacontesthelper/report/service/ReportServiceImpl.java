@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.service.impl;
+package org.ilyatyamin.yacontesthelper.report.service;
 
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -8,11 +8,11 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.itextpdf.html2pdf.HtmlConverter;
 import lombok.AllArgsConstructor;
 import org.ilyatyamin.yacontesthelper.dto.report.ReportRequest;
-import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
-import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmissionWithCode;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode;
+import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient;
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService;
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService;
-import org.ilyatyamin.yacontesthelper.service.*;
 import org.ilyatyamin.yacontesthelper.utils.HeaderLevel;
 import org.ilyatyamin.yacontesthelper.utils.MarkdownFormatter;
 import org.ilyatyamin.yacontesthelper.utils.UtilsService;

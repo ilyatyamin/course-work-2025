@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dto.yacontest
+package org.ilyatyamin.yacontesthelper.grades.dto
 
 data class ContestProblem(
     val alias : String,

@@ -1,6 +1,6 @@
 package org.ilyatyamin.yacontesthelper.grades.service.yacontest;
 
-import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
 
 import java.util.List;
 

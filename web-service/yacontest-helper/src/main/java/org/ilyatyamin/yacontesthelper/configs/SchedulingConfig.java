@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.scheduling;
+package org.ilyatyamin.yacontesthelper.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

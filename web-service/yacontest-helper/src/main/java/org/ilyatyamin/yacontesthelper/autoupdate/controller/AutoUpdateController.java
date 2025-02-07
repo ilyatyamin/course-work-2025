@@ -1,7 +1,7 @@
-package org.ilyatyamin.yacontesthelper.controller;
+package org.ilyatyamin.yacontesthelper.autoupdate.controller;
 
 import lombok.AllArgsConstructor;
-import org.ilyatyamin.yacontesthelper.dto.scheduling.AutoUpdateRequest;
+import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;

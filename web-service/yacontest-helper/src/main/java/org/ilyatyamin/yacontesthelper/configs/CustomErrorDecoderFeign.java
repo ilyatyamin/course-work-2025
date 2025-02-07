@@ -2,7 +2,7 @@ package org.ilyatyamin.yacontesthelper.configs;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;
-import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
+import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.springframework.http.HttpStatus;
 
 public class CustomErrorDecoderFeign implements ErrorDecoder {

@@ -1,7 +1,7 @@
-package org.ilyatyamin.yacontesthelper.service;
+package org.ilyatyamin.yacontesthelper.report.service;
 
 import org.ilyatyamin.yacontesthelper.dto.report.ReportRequest;
-import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmissionWithCode;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode;
 
 import java.util.List;
 import java.util.Map;

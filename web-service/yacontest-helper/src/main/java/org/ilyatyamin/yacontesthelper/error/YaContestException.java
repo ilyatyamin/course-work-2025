@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.exceptions;
+package org.ilyatyamin.yacontesthelper.error;
 
 import lombok.Getter;
 

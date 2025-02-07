@@ -12,7 +12,7 @@ import com.google.api.services.sheets.v4.model.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
-import org.ilyatyamin.yacontesthelper.exceptions.YaContestException;
+import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -3,7 +3,7 @@ package org.ilyatyamin.yacontesthelper.grades.service.processor;
 import kotlin.Pair;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

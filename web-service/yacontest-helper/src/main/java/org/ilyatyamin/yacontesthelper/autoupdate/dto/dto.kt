@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dto.scheduling
+package org.ilyatyamin.yacontesthelper.autoupdate.dto
 
 data class AutoUpdateRequest(
     val contestId: String,

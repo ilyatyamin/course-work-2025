@@ -1,7 +1,7 @@
 package org.ilyatyamin.yacontesthelper.grades.service.processor;
 
 import kotlin.Pair;
-import org.ilyatyamin.yacontesthelper.dto.yacontest.ContestSubmission;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

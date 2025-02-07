@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.dto;
+package org.ilyatyamin.yacontesthelper.error;
 
 public record ErrorResponse(
         Integer code,
