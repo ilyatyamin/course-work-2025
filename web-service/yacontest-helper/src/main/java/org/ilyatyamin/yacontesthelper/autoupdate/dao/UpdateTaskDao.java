@@ -1,13 +1,17 @@
 package org.ilyatyamin.yacontesthelper.autoupdate.dao;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 
 @Table(name = "update_task")
 @Entity
-@Data
+@AllArgsConstructor
+@Getter
+@NoArgsConstructor
 public class UpdateTaskDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,10 +19,15 @@ public class UpdateTaskDao {
 
     private Long ownerId;
 
+    private Long taskId;
+
     private String cronExpression;
 
     private String updateUrl;
 
     @Nullable
+    @Column(columnDefinition="TEXT")
     private String credentialsForUpdate;
+
+    private TaskStatus status;
 }

@@ -109,7 +109,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     }
 
 
-    private Sheets getSpreadsheets(String credentials) throws GeneralSecurityException, IOException {
+    public Sheets getSpreadsheets(String credentials) throws GeneralSecurityException, IOException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY,
                 getCredentials(credentials))
@@ -147,8 +147,6 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                 .map(value -> new CellData()
                         .setUserEnteredValue(new ExtendedValue().setStringValue(value.toString()))
                 ).toList();
-
-        log.warn("spreadsheetId = {}, sheetIndex = {}, rowIndex = {}, columnIndex = {}", spreadSheetId, sheetIndex, rowIndex, columnIndex);
 
         requests.add(new Request()
                 .setUpdateCells(new UpdateCellsRequest()
