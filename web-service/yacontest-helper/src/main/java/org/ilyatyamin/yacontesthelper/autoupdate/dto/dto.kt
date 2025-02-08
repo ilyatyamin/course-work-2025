@@ -14,3 +14,7 @@ data class AutoUpdateRequest(
 data class AutoUpdateResponse(
     val id: Long
 )
+
+data class AutoUpdateDeleteRequest(
+    val id : Long
+)

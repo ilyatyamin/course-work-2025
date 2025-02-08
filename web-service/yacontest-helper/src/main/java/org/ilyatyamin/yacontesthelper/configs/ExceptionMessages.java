@@ -12,6 +12,7 @@ public enum ExceptionMessages {
     CONTEST_NOT_FOUND("Contest with this id not found."),
     GRADES_TABLE_NOT_FOUND("Grades table with this id not found."),
     GOOGLE_SHEETS_NOT_FOUND("Google sheets with this id not found."),
+    UPDATE_TASK_NOT_FOUND("Update task with this id not found."),
     ;
 
     private final String message;

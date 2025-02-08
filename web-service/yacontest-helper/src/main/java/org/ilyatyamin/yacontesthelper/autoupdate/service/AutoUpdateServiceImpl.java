@@ -4,6 +4,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import lombok.AllArgsConstructor;
 import org.ilyatyamin.yacontesthelper.autoupdate.dao.TaskStatus;
 import org.ilyatyamin.yacontesthelper.autoupdate.dao.UpdateTaskDao;
+import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateDeleteRequest;
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateResponse;
 import org.ilyatyamin.yacontesthelper.autoupdate.repository.UpdateTaskRepository;
@@ -43,6 +44,16 @@ public class AutoUpdateServiceImpl implements AutoUpdateService {
                         TaskStatus.ACTIVE)
         );
         return new AutoUpdateResponse(dao.getId());
+    }
+
+    @Override
+    public void removeFromAutoUpdate(AutoUpdateDeleteRequest request) {
+        if (!updateTaskRepository.existsById(request.getId())) {
+            throw new YaContestException(HttpStatus.NOT_FOUND.value(),
+                    ExceptionMessages.UPDATE_TASK_NOT_FOUND.getMessage());
+        }
+        UpdateTaskDao dao = updateTaskRepository.getReferenceById(request.getId());
+        schedulingService.removeTaskFromScheduling(dao.getTaskId());
     }
 
     private Boolean checkIfWritingInSheetPossible(String googleCredentials, String spreadsheetUrl) {

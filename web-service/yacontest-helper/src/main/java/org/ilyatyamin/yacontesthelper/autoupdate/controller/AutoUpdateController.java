@@ -1,11 +1,13 @@
 package org.ilyatyamin.yacontesthelper.autoupdate.controller;
 
 import lombok.AllArgsConstructor;
+import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateDeleteRequest;
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateResponse;
 import org.ilyatyamin.yacontesthelper.autoupdate.service.AutoUpdateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +22,11 @@ public class AutoUpdateController {
     public ResponseEntity<AutoUpdateResponse> setAutoUpdate(@RequestBody AutoUpdateRequest request) {
         AutoUpdateResponse response = autoUpdateService.setOnAutoUpdate(request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/api/update")
+    public ResponseEntity<Void> removeAutoUpdate(@RequestBody AutoUpdateDeleteRequest request) {
+        autoUpdateService.removeFromAutoUpdate(request);
+        return ResponseEntity.ok().build();
     }
 }
