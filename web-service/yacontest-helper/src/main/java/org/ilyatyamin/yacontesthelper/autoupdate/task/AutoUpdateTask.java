@@ -6,8 +6,6 @@ import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
 import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequest;
 import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService;
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
