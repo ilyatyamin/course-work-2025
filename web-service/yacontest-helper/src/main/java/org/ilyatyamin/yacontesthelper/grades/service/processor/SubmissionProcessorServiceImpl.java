@@ -18,9 +18,9 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
     public Map<String, Map<String, Double>> processSubmissionList(List<ContestSubmission> submissionList, List<String> problemList,
                                                                   List<String> participants, Optional<LocalDateTime> deadline) {
         // form start table
-        Map<String, Map<String, Double>> resultTable = new HashMap<>();
+        Map<String, Map<String, Double>> resultTable = new LinkedHashMap<>();
         for (String problem : problemList) {
-            Map<String, Double> key = new HashMap<>();
+            Map<String, Double> key = new LinkedHashMap<>();
             for (String participant : participants) {
                 key.put(participant, 0.0);
             }
