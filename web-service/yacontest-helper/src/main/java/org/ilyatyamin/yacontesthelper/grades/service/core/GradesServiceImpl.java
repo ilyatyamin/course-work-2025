@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.grades.dao.GradesResult;
-import org.ilyatyamin.yacontesthelper.grades.dto.GoogleSheetsRequest;
-import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequest;
-import org.ilyatyamin.yacontesthelper.grades.dto.GradesResponse;
-import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
+import org.ilyatyamin.yacontesthelper.grades.dto.*;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.ilyatyamin.yacontesthelper.grades.repository.GradesResultRepository;
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService;
@@ -18,6 +15,7 @@ import org.ilyatyamin.yacontesthelper.utils.UtilsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -53,6 +51,17 @@ public class GradesServiceImpl implements GradesService {
         );
 
         return new GradesResponse(result.getId(), resultTable);
+    }
+
+    @Override
+    public GradesResponse getGradesList(GradesRequestWithString gradesRequest) {
+        String delimiter = gradesRequest.delimiterForParticipantList() == null ? "\n" : gradesRequest.delimiterForParticipantList();
+        List<String> participants = Arrays.stream(gradesRequest.participants().split(delimiter)).toList();
+
+        GradesRequest request = new GradesRequest(gradesRequest.contestId(), participants,
+                gradesRequest.deadline(), gradesRequest.yandexKey());
+
+        return getGradesList(request);
     }
 
     @Override
