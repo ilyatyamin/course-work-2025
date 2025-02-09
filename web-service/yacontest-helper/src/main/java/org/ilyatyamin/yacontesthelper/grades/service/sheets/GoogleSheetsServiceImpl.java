@@ -9,10 +9,13 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
+import org.ilyatyamin.yacontesthelper.grades.dto.StyleSheetsSettings;
+import org.ilyatyamin.yacontesthelper.grades.service.mapper.MapperKt;
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
+
+import static org.ilyatyamin.yacontesthelper.grades.service.mapper.MapperKt.cellToCellData;
 
 @AllArgsConstructor
 @Service
@@ -29,50 +34,58 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
     private static final Integer COLUMN_START_INDEX = 0;
+    private static final StyleSheetsSettings DEFAULT_STYLE = new StyleSheetsSettings();
+    private static final StyleSheetsSettings BOLD_STYLE = StyleSheetsSettings.Companion.getBoldStandard();
 
     private final SubmissionProcessorService submissionProcessorService;
 
+    @Transactional
     public <K, V, M> void writeToSheet(final String credentials,
                                        final String spreadsheetName,
                                        final String sheetName,
                                        final Map<K, Map<V, M>> results) {
+        List<Request> requests = new ArrayList<>();
 
         var lists = submissionProcessorService.getKeysAndValuesInMap(results);
         List<K> keys = lists.getFirst();
         List<V> keysInValues = lists.getSecond();
+        int rowCounter = 0;
 
         try {
             Sheets userCatalog = getSpreadsheets(credentials);
             if (isSpreadSheetExists(userCatalog, spreadsheetName)) {
                 Integer listIndex = getListIndexInSpreadsheet(userCatalog, spreadsheetName, sheetName);
                 if (listIndex == -1) {
-                    createNewSheet(userCatalog, spreadsheetName, sheetName);
+                    requests.addAll(createNewSheet(sheetName));
                     listIndex = getListIndexInSpreadsheet(userCatalog, spreadsheetName, sheetName);
                 }
-                log.warn("listIndex = {}", listIndex.toString());
 
-                int rowCounter = 0;
+                List<Cell> firstData = keys.stream()
+                        .map(value -> new Cell(value.toString(), BOLD_STYLE))
+                        .toList();
 
-                List<String> firstData = new ArrayList<>();
-                firstData.add(" ");
-                firstData.addAll(keys.stream().map(K::toString).toList());
-
-                writeDataInRange(userCatalog, firstData, spreadsheetName, listIndex, rowCounter, COLUMN_START_INDEX);
+                requests.addAll(writeDataInRange(new Cell("", DEFAULT_STYLE), firstData,
+                        listIndex, rowCounter, COLUMN_START_INDEX));
                 ++rowCounter;
 
                 for (V value : keysInValues) {
-                    List<String> data = new ArrayList<>();
-                    data.add(value.toString());
+                    List<Cell> data = new ArrayList<>();
+                    Cell header = new Cell(value.toString(), BOLD_STYLE);
                     for (K key : keys) {
-                        data.add(results.get(key).get(value).toString());
+                        data.add(new Cell(results.get(key).get(value).toString(), DEFAULT_STYLE));
                     }
-                    writeDataInRange(userCatalog, data, spreadsheetName, listIndex, rowCounter, COLUMN_START_INDEX);
+                    requests.addAll(writeDataInRange(header, data,
+                            listIndex, rowCounter, COLUMN_START_INDEX));
                     ++rowCounter;
                 }
             } else {
                 throw new YaContestException(HttpStatus.NOT_FOUND.value(),
                         ExceptionMessages.GOOGLE_SHEETS_NOT_FOUND.getMessage());
             }
+
+            BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest()
+                .setRequests(requests);
+            userCatalog.spreadsheets().batchUpdate(spreadsheetName, batchUpdateRequest).execute();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -117,36 +130,23 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                 .build();
     }
 
-    private void createNewSheet(Sheets service, String spreadsheetId, String sheetName) {
-        try {
-            SheetProperties sheetProperties = new SheetProperties();
-            sheetProperties.setTitle(sheetName);
+    private List<Request> createNewSheet(String sheetName) {
+        SheetProperties sheetProperties = new SheetProperties().setTitle(sheetName);
+        AddSheetRequest addSheetRequest = new AddSheetRequest().setProperties(sheetProperties);
+        Request request = new Request().setAddSheet(addSheetRequest);
 
-            AddSheetRequest addSheetRequest = new AddSheetRequest();
-            addSheetRequest.setProperties(sheetProperties);
-
-            Request request = new Request();
-            request.setAddSheet(addSheetRequest);
-
-            BatchUpdateSpreadsheetRequest batchRequest = new BatchUpdateSpreadsheetRequest();
-            batchRequest.setRequests(Collections.singletonList(request));  // Use singletonList for a single request
-
-            // 5. Execute the request.
-            service.spreadsheets().batchUpdate(spreadsheetId, batchRequest).execute();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return List.of(request);
     }
 
-    private <T> void writeDataInRange(Sheets service, List<T> data,
-                                      String spreadSheetId, int sheetIndex,
-                                      int rowIndex, int columnIndex) {
+    private List<Request> writeDataInRange(Cell header, List<Cell> data,
+                                           int sheetIndex, int rowIndex, int columnIndex) {
         List<Request> requests = new ArrayList<>();
-        List<CellData> cellData = data.stream()
-                .map(value -> new CellData()
-                        .setUserEnteredValue(new ExtendedValue().setStringValue(value.toString()))
-                ).toList();
+
+        List<CellData> cellData = new ArrayList<>();
+        cellData.add(cellToCellData(header));
+        cellData.addAll(data.stream()
+                .map(MapperKt::cellToCellData)
+                .toList());
 
         requests.add(new Request()
                 .setUpdateCells(new UpdateCellsRequest()
@@ -155,14 +155,26 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
                                 .setRowIndex(rowIndex)
                                 .setColumnIndex(columnIndex))
                         .setRows(List.of(new RowData().setValues(cellData)))
-                        .setFields("userEnteredValue,userEnteredFormat.backgroundColor")));
+                        .setFields("userEnteredValue,userEnteredFormat")));
 
-        BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest()
-                .setRequests(requests);
-        try {
-            service.spreadsheets().batchUpdate(spreadSheetId, batchUpdateRequest).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        requests.addAll(getRequestForAutoResize(sheetIndex, columnIndex));
+        return requests;
+    }
+
+    private List<Request> getRequestForAutoResize(int sheetIndex, int columnIndex) {
+        return List.of(new Request()
+                .setAutoResizeDimensions(new AutoResizeDimensionsRequest()
+                        .setDimensions(new DimensionRange()
+                                .setSheetId(sheetIndex)
+                                .setDimension("COLUMNS")
+                                .setStartIndex(columnIndex)
+                                .setEndIndex(columnIndex + 2)))
+        );
+    }
+
+    public record Cell(
+            String data,
+            StyleSheetsSettings settings
+    ) {
     }
 }

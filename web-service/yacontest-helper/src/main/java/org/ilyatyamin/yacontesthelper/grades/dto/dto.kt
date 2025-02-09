@@ -36,3 +36,15 @@ data class ContestSubmissionWithCode(
     var submission: ContestSubmission,
     var code: String?
 )
+
+data class StyleSheetsSettings(
+    val fontSize: Int = 11,
+    val isBoldEnabled: Boolean = false,
+    val isItalicEnabled: Boolean = false
+) {
+    companion object {
+        fun getBoldStandard() : StyleSheetsSettings {
+            return StyleSheetsSettings(11, true, false)
+        }
+    }
+}
