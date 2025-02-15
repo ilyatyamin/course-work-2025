@@ -24,10 +24,14 @@ spring:
           readTimeout: 5000
           loggerLevel: basic
 
+
 configs:
   base-contest-url: https://api.contest.yandex.net/api/public/v2
-  get-problem-url: contests/{contestId}/problems
 
   get-submission-list:
     page-size: 128
     url: https://api.contest.yandex.net/api/public/v2/contests/%s/submissions
+
+security:
+  jwt-secret: ${SECRET_KEY_JWT}
+  validity-period-seconds: ${VALIDITY_PERIOD_SEC}
