@@ -32,7 +32,7 @@ class UserService {
         return userRepository.save(dao)
     }
 
-    internal fun getByUsername(username: String): UserDao {
+    private fun getByUsername(username: String): UserDao {
         return userRepository.findByUsername(username)
             .orElseThrow {
                 AuthException(
@@ -47,7 +47,7 @@ class UserService {
     }
 
     internal fun getCurrentUser() : UserDao {
-        val username = SecurityContextHolder.getContext().authentication.name;
-        return getByUsername(username);
+        val username = SecurityContextHolder.getContext().authentication.name
+        return getByUsername(username)
     }
 }

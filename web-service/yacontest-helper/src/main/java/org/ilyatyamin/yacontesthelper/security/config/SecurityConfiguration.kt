@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.logout.LogoutFilter
 import org.springframework.web.cors.CorsConfiguration
 
 
@@ -25,9 +26,14 @@ open class SecurityConfiguration(private val jwtFilter: JwtFilter) {
     @Autowired
     private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var filterChainExceptionHandler: FilterChainExceptionHandler
+
     @Bean
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
+        http
+            .addFilterBefore(filterChainExceptionHandler, LogoutFilter::class.java)
+            .csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
             .cors { cors ->
                 cors.configurationSource {
                     val corsConfiguration = CorsConfiguration()

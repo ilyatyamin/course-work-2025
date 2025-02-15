@@ -18,6 +18,7 @@ public enum ExceptionMessages {
     NO_SUCH_USER("No such user found in database."),
     USERNAME_ALREADY_EXISTS("User with this username already exists."),
     USER_EMAIL_ALREADY_EXISTS("User with this email already exists."),
+    TOKEN_EXPIRED("Your token has expired. Please refresh it."),
     ;
 
     private final String message;

@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
-
 @Service
 class AuthService {
     @Autowired
@@ -28,11 +27,16 @@ class AuthService {
     private lateinit var jwtTokenService: JwtTokenService
 
     fun registerUser(request : RegisterRequest): TokenResponse {
-        val user = UserDao(request.username, request.email, request.password, Role.ROLE_USER)
+        val user = UserDao(
+            request.username,
+            passwordEncoder.encode(request.password),
+            request.email,
+            Role.ROLE_USER
+        )
         userService.createUser(user)
 
-        val jwt = jwtTokenService.generateToken(user);
-        return TokenResponse(jwt);
+        val jwt = jwtTokenService.generateToken(user)
+        return TokenResponse(jwt)
     }
 
     fun loginUser(request: LoginRequest): TokenResponse {
@@ -40,7 +44,8 @@ class AuthService {
             UsernamePasswordAuthenticationToken(request.username, request.password)
         )
 
-        val user : UserDetails = userService.userDetailsService().loadUserByUsername(request.username)
+        val user : UserDetails = userService.userDetailsService()
+            .loadUserByUsername(request.username)
 
         val jwt = jwtTokenService.generateToken(user)
         return TokenResponse(jwt)

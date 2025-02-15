@@ -4,7 +4,10 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import org.ilyatyamin.yacontesthelper.error.AuthException
+import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.*
@@ -24,10 +27,12 @@ class JwtTokenService {
     }
 
     fun generateToken(userDetails: UserDetails): String {
+        val time = System.currentTimeMillis()
+
         return Jwts.builder()
             .subject(userDetails.username)
-            .issuedAt(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + validityPeriod!! * 1000))
+            .issuedAt(Date(time))
+            .expiration(Date(time + validityPeriod!! * 1000))
             .signWith(signingKey())
             .compact()
     }
@@ -43,10 +48,17 @@ class JwtTokenService {
     }
 
     private fun extractAllClaims(token: String): Claims {
-        return Jwts.parser().setSigningKey(signingKey())
-            .build()
-            .parseClaimsJws(token)
-            .body
+        try {
+            return Jwts.parser()
+                .verifyWith(signingKey())
+                .build()
+                .parseSignedClaims(token)
+                .payload
+        } catch (e: Exception) {
+            throw AuthException(
+                HttpStatus.UNAUTHORIZED.value(),
+                ExceptionMessages.TOKEN_EXPIRED.message)
+        }
     }
 
     private fun signingKey(): SecretKey {
