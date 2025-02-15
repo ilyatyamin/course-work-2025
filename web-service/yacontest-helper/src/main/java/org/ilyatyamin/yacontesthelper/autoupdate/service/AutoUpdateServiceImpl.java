@@ -8,7 +8,7 @@ import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateDeleteRequest;
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateResponse;
 import org.ilyatyamin.yacontesthelper.autoupdate.repository.UpdateTaskRepository;
-import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
+import org.ilyatyamin.yacontesthelper.error.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.configs;
+package org.ilyatyamin.yacontesthelper.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +13,11 @@ public enum ExceptionMessages {
     GRADES_TABLE_NOT_FOUND("Grades table with this id not found."),
     GOOGLE_SHEETS_NOT_FOUND("Google sheets with this id not found."),
     UPDATE_TASK_NOT_FOUND("Update task with this id not found."),
+
+    AUTH_FIELD_IS_NULL("Your username or password cannot be null."),
+    NO_SUCH_USER("No such user found in database."),
+    USERNAME_ALREADY_EXISTS("User with this username already exists."),
+    USER_EMAIL_ALREADY_EXISTS("User with this email already exists."),
     ;
 
     private final String message;

@@ -2,6 +2,7 @@ package org.ilyatyamin.yacontesthelper.configs;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import org.ilyatyamin.yacontesthelper.error.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.springframework.http.HttpStatus;
 

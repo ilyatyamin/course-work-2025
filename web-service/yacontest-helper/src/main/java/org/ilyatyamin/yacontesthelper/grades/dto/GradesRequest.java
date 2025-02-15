@@ -5,7 +5,7 @@ import java.util.List;
 
 public record GradesRequest(
         String contestId,
-        List<String> participants,
+        List<String> participantsList,
         @Nullable String deadline,
         String yandexKey
 ) {}

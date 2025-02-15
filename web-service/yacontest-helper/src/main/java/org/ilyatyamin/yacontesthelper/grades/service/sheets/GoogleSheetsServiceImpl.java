@@ -12,7 +12,7 @@ import com.google.api.services.sheets.v4.model.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
+import org.ilyatyamin.yacontesthelper.error.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.ilyatyamin.yacontesthelper.grades.dto.StyleSheetsSettings;
 import org.ilyatyamin.yacontesthelper.grades.service.mapper.MapperKt;

@@ -2,7 +2,7 @@ package org.ilyatyamin.yacontesthelper.grades.service.core;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ilyatyamin.yacontesthelper.configs.ExceptionMessages;
+import org.ilyatyamin.yacontesthelper.error.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.grades.dao.GradesResult;
 import org.ilyatyamin.yacontesthelper.grades.dto.*;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
@@ -41,7 +41,7 @@ public class GradesServiceImpl implements GradesService {
         var resultTable = submissionProcessorService.processSubmissionList(
                 submissionList,
                 problemList,
-                gradesRequest.participants(),
+                gradesRequest.participantsList(),
                 utilsService.processLocalDateTime(gradesRequest.deadline())
         );
 
