@@ -19,6 +19,8 @@ public enum ExceptionMessages {
     USERNAME_ALREADY_EXISTS("User with this username already exists."),
     USER_EMAIL_ALREADY_EXISTS("User with this email already exists."),
     TOKEN_EXPIRED("Your token has expired. Please refresh it."),
+    PROVIDED_AUTH_MUST_REFRESH("You provided auth token but method need refresh token."),
+    TOKEN_DOES_NOT_EXIST("Your token does not exist."),
     ;
 
     private final String message;

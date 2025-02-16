@@ -52,14 +52,23 @@ class JwtTokenService(private val tokenRepository: TokenRepository) {
         return token
     }
 
+    internal fun isTokenExists(token: String): Boolean {
+        return tokenRepository.findByPayload(token).isPresent
+    }
+
     internal fun isTokenRefresh(token: String): Boolean {
         return tokenRepository.existsTokenDaoByPayloadAndTokenType(token, TokenType.REFRESH)
     }
 
     internal fun isTokenNotExpired(token: String): Boolean {
-        val username = extractUsername(token)
-        return extractUsername(token) == username &&
-                !extractClaim(token) { obj: Claims -> obj.expiration }.before(Date())
+        val tokenEntity = tokenRepository.findByPayload(token)
+        if (tokenEntity.isEmpty) {
+            return false
+        } else {
+            val username = extractUsername(token)
+            return extractUsername(token) == username &&
+                    !extractClaim(token) { obj: Claims -> obj.expiration }.before(Date())
+        }
     }
 
     private fun updateOnConflictInsertToDb(

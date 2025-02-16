@@ -29,7 +29,7 @@ public class TokenDao {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    @JoinColumn(table = "users", referencedColumnName = "id")
+//    @JoinColumn(table = "users", referencedColumnName = "id")
     private Long userId;
 
     @Column(name = "payload", unique = true, nullable = false)

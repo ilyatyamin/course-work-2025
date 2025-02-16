@@ -50,9 +50,21 @@ class AuthService(
 
     internal fun refreshToken(request: RefreshTokenRequest): TokenResponse {
         val username = jwtTokenService.extractUsername(request.refreshToken)
-        if (jwtTokenService.isTokenRefresh(request.refreshToken) &&
-            jwtTokenService.isTokenNotExpired(request.refreshToken)
-        ) {
+
+        if (!jwtTokenService.isTokenExists(request.refreshToken)) {
+            throw AuthException(
+                HttpStatus.UNAUTHORIZED.value(),
+                ExceptionMessages.TOKEN_DOES_NOT_EXIST.message
+            )
+        }
+        if (!jwtTokenService.isTokenRefresh(request.refreshToken)) {
+            throw AuthException(
+                HttpStatus.UNAUTHORIZED.value(),
+                ExceptionMessages.PROVIDED_AUTH_MUST_REFRESH.message
+            )
+        }
+
+        if (jwtTokenService.isTokenNotExpired(request.refreshToken)) {
             val user: UserDao = userService.getByUsername(username)
 
             val authToken = jwtTokenService.generateToken(user, TokenType.AUTH)
