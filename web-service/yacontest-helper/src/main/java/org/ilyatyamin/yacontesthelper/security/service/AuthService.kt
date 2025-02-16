@@ -1,7 +1,5 @@
 package org.ilyatyamin.yacontesthelper.security.service
 
-import org.ilyatyamin.yacontesthelper.error.AuthException
-import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.security.dao.Role
 import org.ilyatyamin.yacontesthelper.security.dao.TokenType
 import org.ilyatyamin.yacontesthelper.security.dao.UserDao
@@ -9,7 +7,6 @@ import org.ilyatyamin.yacontesthelper.security.dto.LoginRequest
 import org.ilyatyamin.yacontesthelper.security.dto.RefreshTokenRequest
 import org.ilyatyamin.yacontesthelper.security.dto.RegisterRequest
 import org.ilyatyamin.yacontesthelper.security.dto.TokenResponse
-import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -49,32 +46,13 @@ class AuthService(
     }
 
     internal fun refreshToken(request: RefreshTokenRequest): TokenResponse {
+        jwtTokenService.checkThatTokenExistsAndNotExpired(request.refreshToken, TokenType.REFRESH)
+
         val username = jwtTokenService.extractUsername(request.refreshToken)
+        val user: UserDao = userService.getByUsername(username)
 
-        if (!jwtTokenService.isTokenExists(request.refreshToken)) {
-            throw AuthException(
-                HttpStatus.UNAUTHORIZED.value(),
-                ExceptionMessages.TOKEN_DOES_NOT_EXIST.message
-            )
-        }
-        if (!jwtTokenService.isTokenRefresh(request.refreshToken)) {
-            throw AuthException(
-                HttpStatus.UNAUTHORIZED.value(),
-                ExceptionMessages.PROVIDED_AUTH_MUST_REFRESH.message
-            )
-        }
-
-        if (jwtTokenService.isTokenNotExpired(request.refreshToken)) {
-            val user: UserDao = userService.getByUsername(username)
-
-            val authToken = jwtTokenService.generateToken(user, TokenType.AUTH)
-            val refreshToken = jwtTokenService.generateToken(user, TokenType.REFRESH)
-            return TokenResponse(authToken, refreshToken, jwtTokenService.tokenType)
-        } else {
-            throw AuthException(
-                HttpStatus.UNAUTHORIZED.value(),
-                ExceptionMessages.TOKEN_EXPIRED.message
-            )
-        }
+        val authToken = jwtTokenService.generateToken(user, TokenType.AUTH)
+        val refreshToken = jwtTokenService.generateToken(user, TokenType.REFRESH)
+        return TokenResponse(authToken, refreshToken, jwtTokenService.tokenType)
     }
 }

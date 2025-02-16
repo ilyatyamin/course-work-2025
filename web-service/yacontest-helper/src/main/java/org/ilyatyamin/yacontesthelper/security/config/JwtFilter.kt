@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.ilyatyamin.yacontesthelper.security.dao.TokenType
 import org.ilyatyamin.yacontesthelper.security.service.JwtTokenService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,23 +44,22 @@ class JwtFilter : OncePerRequestFilter() {
         }
 
         val token = authHeader.substring(BEGIN_BEARER_INDEX)
-        val username = jwtTokenService.extractUsername(token)
+        jwtTokenService.checkThatTokenExistsAndNotExpired(token, TokenType.AUTH)
 
+        val username = jwtTokenService.extractUsername(token)
         if (username.isNotEmpty() && SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userService.userDetailsService().loadUserByUsername(username)
 
-            if (jwtTokenService.isTokenNotExpired(token) && !jwtTokenService.isTokenRefresh(token)) {
-                val context = SecurityContextHolder.createEmptyContext()
-                val authToken = UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    "",
-                    userDetails.authorities
-                )
+            val context = SecurityContextHolder.createEmptyContext()
+            val authToken = UsernamePasswordAuthenticationToken(
+                userDetails,
+                "",
+                userDetails.authorities
+            )
 
-                authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                context.authentication = authToken
-                SecurityContextHolder.setContext(context)
-            }
+            authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+            context.authentication = authToken
+            SecurityContextHolder.setContext(context)
         }
 
         filterChain.doFilter(request, response)

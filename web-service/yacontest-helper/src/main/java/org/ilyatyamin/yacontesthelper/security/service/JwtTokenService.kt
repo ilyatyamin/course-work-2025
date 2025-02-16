@@ -52,23 +52,40 @@ class JwtTokenService(private val tokenRepository: TokenRepository) {
         return token
     }
 
+    internal fun checkThatTokenExistsAndNotExpired(token: String, tokenType: TokenType) {
+        val tokenEntity = tokenRepository.findByPayload(token)
+        if (tokenEntity.isEmpty) {
+            throw AuthException(
+                HttpStatus.UNAUTHORIZED.value(),
+                ExceptionMessages.TOKEN_DOES_NOT_EXIST.message
+            )
+        }
+        val tokenDao = tokenEntity.get()
+        if (tokenDao.tokenType != tokenType) {
+            throw AuthException(
+                HttpStatus.UNAUTHORIZED.value(),
+                ExceptionMessages.PROVIDED_REFRESH_MUST_AUTH.message
+            )
+        }
+
+        val username = extractUsername(token)
+        val isNotExpired = extractUsername(token) == username &&
+                !extractClaim(token) { obj: Claims -> obj.expiration }.before(Date())
+
+        if (!isNotExpired) {
+            throw AuthException(
+                HttpStatus.UNAUTHORIZED.value(),
+                ExceptionMessages.TOKEN_EXPIRED.message
+            )
+        }
+    }
+
     internal fun isTokenExists(token: String): Boolean {
         return tokenRepository.findByPayload(token).isPresent
     }
 
     internal fun isTokenRefresh(token: String): Boolean {
         return tokenRepository.existsTokenDaoByPayloadAndTokenType(token, TokenType.REFRESH)
-    }
-
-    internal fun isTokenNotExpired(token: String): Boolean {
-        val tokenEntity = tokenRepository.findByPayload(token)
-        if (tokenEntity.isEmpty) {
-            return false
-        } else {
-            val username = extractUsername(token)
-            return extractUsername(token) == username &&
-                    !extractClaim(token) { obj: Claims -> obj.expiration }.before(Date())
-        }
     }
 
     private fun updateOnConflictInsertToDb(
@@ -92,18 +109,11 @@ class JwtTokenService(private val tokenRepository: TokenRepository) {
     }
 
     private fun extractAllClaims(token: String): Claims {
-        try {
-            return Jwts.parser()
-                .verifyWith(signingKey())
-                .build()
-                .parseSignedClaims(token)
-                .payload
-        } catch (e: Exception) {
-            throw AuthException(
-                HttpStatus.UNAUTHORIZED.value(),
-                ExceptionMessages.TOKEN_EXPIRED.message
-            )
-        }
+        return Jwts.parser()
+            .verifyWith(signingKey())
+            .build()
+            .parseSignedClaims(token)
+            .payload
     }
 
     private fun signingKey(): SecretKey {
