@@ -32,7 +32,7 @@ class UserService {
         return userRepository.save(dao)
     }
 
-    private fun getByUsername(username: String): UserDao {
+    internal fun getByUsername(username: String): UserDao {
         return userRepository.findByUsername(username)
             .orElseThrow {
                 AuthException(

@@ -46,8 +46,8 @@ open class SecurityConfiguration(private val jwtFilter: JwtFilter) {
             }
             .authorizeHttpRequests { request ->
                 request
-                    .requestMatchers("/api/login").permitAll()
-                    .requestMatchers("/api/register").permitAll()
+                    .requestMatchers("/api/login/*").permitAll()
+                    .requestMatchers("/api/register/*").permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement { manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
