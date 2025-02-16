@@ -30,5 +30,7 @@ data class LoginRequest(
 )
 
 data class TokenResponse(
-    val token: String
+    val authToken: String,
+    val refreshToken: String,
+    val tokenType: String
 )

@@ -19,20 +19,26 @@ class JwtTokenService {
     @Value("\${security.jwt-secret}")
     private val jwtSecret: String? = null
 
-    @Value("\${security.validity-period-seconds}")
-    private val validityPeriod: Long? = null
+    @Value("\${security.auth-validity-period-seconds}")
+    private val authValidityPeriod: Long? = null
+
+    @Value("\${security.refresh-validity-period-seconds}")
+    private val refreshValidityPeriod: Long? = null
+
+    internal val tokenType: String = "BEARER"
 
     fun extractUsername(token: String): String {
         return extractClaim(token) { obj: Claims -> obj.subject }
     }
 
-    fun generateToken(userDetails: UserDetails): String {
+    fun generateToken(userDetails: UserDetails, tokenType: TokenType): String {
         val time = System.currentTimeMillis()
+        val period = if (tokenType == TokenType.AUTH) authValidityPeriod else refreshValidityPeriod
 
         return Jwts.builder()
             .subject(userDetails.username)
             .issuedAt(Date(time))
-            .expiration(Date(time + validityPeriod!! * 1000))
+            .expiration(Date(time + period!! * 1000))
             .signWith(signingKey())
             .compact()
     }
@@ -64,5 +70,9 @@ class JwtTokenService {
     private fun signingKey(): SecretKey {
         val keyBytes = Decoders.BASE64.decode(jwtSecret)
         return Keys.hmacShaKeyFor(keyBytes)
+    }
+
+    enum class TokenType{
+        AUTH, REFRESH
     }
 }

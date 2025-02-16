@@ -35,8 +35,9 @@ class AuthService {
         )
         userService.createUser(user)
 
-        val jwt = jwtTokenService.generateToken(user)
-        return TokenResponse(jwt)
+        val authToken = jwtTokenService.generateToken(user, JwtTokenService.TokenType.AUTH)
+        val refreshToken = jwtTokenService.generateToken(user, JwtTokenService.TokenType.REFRESH)
+        return TokenResponse(authToken, refreshToken, jwtTokenService.tokenType)
     }
 
     fun loginUser(request: LoginRequest): TokenResponse {
@@ -47,7 +48,8 @@ class AuthService {
         val user : UserDetails = userService.userDetailsService()
             .loadUserByUsername(request.username)
 
-        val jwt = jwtTokenService.generateToken(user)
-        return TokenResponse(jwt)
+        val authToken = jwtTokenService.generateToken(user, JwtTokenService.TokenType.AUTH)
+        val refreshToken = jwtTokenService.generateToken(user, JwtTokenService.TokenType.REFRESH)
+        return TokenResponse(authToken, refreshToken, jwtTokenService.tokenType)
     }
 }

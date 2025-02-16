@@ -5,7 +5,7 @@ data class ContestProblem(
     val name: String,
     val problemType: String,
     val testCount: Long
-);
+)
 
 data class GetProblemsResponse(
     val problems: List<ContestProblem>

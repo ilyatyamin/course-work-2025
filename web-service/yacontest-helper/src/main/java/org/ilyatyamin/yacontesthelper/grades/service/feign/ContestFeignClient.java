@@ -3,6 +3,7 @@ package org.ilyatyamin.yacontesthelper.grades.service.feign;
 import org.ilyatyamin.yacontesthelper.configs.BeanConfigs;
 import org.ilyatyamin.yacontesthelper.grades.dto.GetProblemsResponse;
 import org.ilyatyamin.yacontesthelper.grades.dto.GetSubmissionListResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

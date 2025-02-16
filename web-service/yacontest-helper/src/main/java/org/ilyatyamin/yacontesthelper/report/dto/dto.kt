@@ -13,4 +13,4 @@ data class ReportRequest(
     val isPlagiatCheckNeeded : Boolean,
     val mossKey : String?,
     val saveFormat : SaveFormat
-);
+)

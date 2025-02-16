@@ -34,4 +34,5 @@ configs:
 
 security:
   jwt-secret: ${SECRET_KEY_JWT}
-  validity-period-seconds: ${VALIDITY_PERIOD_SEC}
+  auth-validity-period-seconds: ${AUTH_TOKEN_VALIDITY_PERIOD_SEC}
+  refresh-validity-period-seconds: ${REFRESH_TOKEN_VALIDITY_PERIOD_SEC}
