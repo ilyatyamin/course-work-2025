@@ -94,10 +94,12 @@ class JwtTokenService(private val tokenRepository: TokenRepository) {
     ) {
         val tokenEntity = tokenRepository.findByUserIdAndTokenType(userDetails.id, tokenType)
         if (tokenEntity.isPresent) {
-            val dao = tokenEntity.get()
-            dao.payload = token
-            dao.expiresAt = expiredAt
-            dao.updatedAt = LocalDateTime.now()
+            val dao = tokenEntity.get().apply {
+                this.payload = token
+                this.expiresAt = expiredAt
+                this.updatedAt = updatedAt
+            }
+            tokenRepository.save(dao)
         } else {
             tokenRepository.save(TokenDao(userDetails.id, token, tokenType, expiredAt))
         }
