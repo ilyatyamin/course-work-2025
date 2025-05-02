@@ -15,12 +15,10 @@ import java.io.IOException
 
 
 @Component
-class FilterChainExceptionHandler : OncePerRequestFilter() {
+internal class FilterChainExceptionHandler(
+    @Autowired @Qualifier("handlerExceptionResolver") private val resolver: HandlerExceptionResolver
+) : OncePerRequestFilter() {
     private val log: Logger = LoggerFactory.getLogger(javaClass)
-
-    @Autowired
-    @Qualifier("handlerExceptionResolver")
-    private val resolver: HandlerExceptionResolver? = null
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
@@ -31,7 +29,7 @@ class FilterChainExceptionHandler : OncePerRequestFilter() {
         try {
             filterChain.doFilter(request, response)
         } catch (e: Exception) {
-            resolver!!.resolveException(request, response, null, e)
+            resolver.resolveException(request, response, null, e)
         }
     }
 }

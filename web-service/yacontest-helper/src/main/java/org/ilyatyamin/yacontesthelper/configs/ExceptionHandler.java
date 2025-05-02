@@ -5,13 +5,11 @@ import org.ilyatyamin.yacontesthelper.error.AuthException;
 import org.ilyatyamin.yacontesthelper.error.ErrorResponse;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionHandler extends ExceptionHandlerExceptionResolver {
+public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(value = YaContestException.class)
     public ResponseEntity<ErrorResponse> yaContestException(YaContestException exception) {
         logException(exception);

@@ -48,6 +48,7 @@ open class SecurityConfiguration(private val jwtFilter: JwtFilter) {
                 request
                     .requestMatchers("/api/login/**").permitAll()
                     .requestMatchers("/api/register/**").permitAll()
+                    .requestMatchers("/swagger-ui/index.html").permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement { manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
