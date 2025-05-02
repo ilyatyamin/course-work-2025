@@ -24,6 +24,9 @@ spring:
           readTimeout: 5000
           loggerLevel: basic
 
+springdoc:
+  api-docs:
+    enabled: true
 
 configs:
   base-contest-url: https://api.contest.yandex.net/api/public/v2

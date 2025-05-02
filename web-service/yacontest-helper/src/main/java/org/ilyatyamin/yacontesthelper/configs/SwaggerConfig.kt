@@ -1,21 +1,17 @@
-//package org.ilyatyamin.yacontesthelper.configs;
-//
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//
-//import springfox.documentation.builders.PathSelectors;
-//import springfox.documentation.builders.RequestHandlerSelectors;
-//import springfox.documentation.spi.DocumentationType;
-//import springfox.documentation.spring.web.plugins.Docket;
-//
-//@Configuration
-//public class SwaggerConfig {
-////    @Bean
-////    public Docket swaggerApi() {
-////        return new Docket(DocumentationType.SWAGGER_2)
-////                .select()
-////                .apis(RequestHandlerSelectors.any())
-////                .paths(PathSelectors.any())
-////                .build();
-////    }
-//}
+package org.ilyatyamin.yacontesthelper.configs
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition
+import io.swagger.v3.oas.annotations.info.Contact
+import io.swagger.v3.oas.annotations.info.Info
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+@OpenAPIDefinition(
+    info = Info(
+        title = "YaContest Helper API",
+        description = "API для помощника работы с Яндекс Контестом",
+        version = "1.0.0",
+        contact = Contact(name = "Ilya Tyamin", email = "tyaminilya@gmail.com")
+    )
+)
+open class SwaggerConfig
