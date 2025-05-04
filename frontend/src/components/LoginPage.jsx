@@ -1,6 +1,7 @@
 // LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {authFetch} from "../utils/authFetch.js";
 
 function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false);
@@ -12,14 +13,14 @@ function LoginPage() {
     async function handleSubmit(event) {
         event.preventDefault();
         const form = event.target;
-        const endpoint = isRegistering ? 'http://localhost:8080/api/register' : '${import.meta.env.VITE_API_BASE}/api/login';
+        const endpoint = isRegistering ? 'http://localhost:8080/api/register' : 'http://localhost:8080/api/login';
         const body = JSON.stringify({
             username: form.username.value,
             email: form.email?.value,
             password: form.password.value
         });
 
-        const res = await fetch(endpoint, {
+        const res = await authFetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body

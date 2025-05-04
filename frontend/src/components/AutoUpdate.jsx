@@ -1,6 +1,7 @@
 // AutoUpdatePage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {authFetch} from "../utils/authFetch.js";
 
 function AutoUpdatePage() {
     const [message, setMessage] = useState('');
@@ -18,7 +19,7 @@ function AutoUpdatePage() {
 
         const body = {
             contestId: form.contestId.value,
-            participants: form.participants.value.split(',').map(p => p.trim()),
+            participantsList: form.participants.value.split(',').map(p => p.trim()),
             deadline: form.deadline.value,
             yandexKey: form.yandexKey.value,
             credentialsGoogle: form.creds.value,
@@ -27,7 +28,7 @@ function AutoUpdatePage() {
             cronExpression: form.cron.value
         };
 
-        const res = await fetch('${import.meta.env.VITE_API_BASE}/api/update', {
+        const res = await authFetch('http://localhost:8080/api/update', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -48,7 +49,7 @@ function AutoUpdatePage() {
         event.preventDefault();
         const id = event.target.id.value;
 
-        const res = await fetch('${import.meta.env.VITE_API_BASE}/api/update', {
+        const res = await authFetch('http://localhost:8080/api/update', {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,

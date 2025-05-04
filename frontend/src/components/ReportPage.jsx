@@ -1,6 +1,7 @@
 // ReportPage.jsx
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {authFetch} from "../utils/authFetch.js";
 
 function ReportPage() {
     const [output, setOutput] = useState('');
@@ -13,27 +14,38 @@ function ReportPage() {
         navigate('/login');
     }
 
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
     async function handleSubmit(event) {
         event.preventDefault();
         const form = event.target;
 
         const payload = {
             contestId: form.contestId.value,
-            participants: form.participants.value.split(',').map(p => p.trim()),
-            deadline: form.deadline.value,
+            participantsList: form.participants.value.split(',').map(p => p.trim()),
+            deadline: formatDate(new Date(form.deadline.value)),
             yandexKey: form.yandexKey.value,
-            isPlagiatCheckNeeded: form.plag.checked,
-            mossKey: form.mossKey.value,
-            saveFormat: form.format.value
+            // isPlagiatCheckNeeded: form.plag.checked,
+            // mossKey: form.mossKey.value,
+            // saveFormat: form.format.value
         };
 
-        const res = await fetch('/api/grades', {
+        const res = await authFetch('http://localhost:8080/api/grades', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({withList: payload})
+            body: JSON.stringify(payload)
         });
 
         if (res.ok) {
@@ -46,7 +58,7 @@ function ReportPage() {
     }
 
     async function downloadXLSX() {
-        const res = await fetch(`/api/grades/${tableId}/xlsx`, {
+        const res = await authFetch(`http://localhost:8080/api/grades/${tableId}/xlsx`, {
             method: 'POST',
             headers: {'Authorization': `Bearer ${token}`}
         });
@@ -61,7 +73,7 @@ function ReportPage() {
     async function sendToSheets(event) {
         event.preventDefault();
         const form = event.target;
-        await fetch(`/api/grades/${tableId}/googleSheets`, {
+        await authFetch(`http://localhost:8080/api/grades/${tableId}/googleSheets`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
