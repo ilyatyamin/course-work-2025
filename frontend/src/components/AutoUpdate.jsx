@@ -1,4 +1,3 @@
-// AutoUpdatePage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {authFetch} from "../utils/authFetch.js";
@@ -41,7 +40,7 @@ function AutoUpdatePage() {
             const data = await res.json();
             setMessage(`Успешно установлено автообновление: id=${data.id}`);
         } else {
-            setMessage('Ошибка при установке автообновления');
+            setMessage('Ошибка при установке автообновления :(');
         }
     }
 

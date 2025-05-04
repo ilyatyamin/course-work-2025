@@ -1,4 +1,3 @@
-// ReportPage.jsx
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {authFetch} from "../utils/authFetch.js";
