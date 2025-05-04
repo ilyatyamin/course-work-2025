@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {authFetch} from "../utils/authFetch.js";
 
 function LoginPage() {
@@ -21,7 +21,7 @@ function LoginPage() {
 
         const res = await authFetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body
         });
 
@@ -40,18 +40,18 @@ function LoginPage() {
             <h1>{isRegistering ? 'Регистрация' : 'Вход'}</h1>
             <form onSubmit={handleSubmit}>
                 <label>Имя пользователя</label>
-                <input name="username" type="text" required />
+                <input name="username" type="text" required/>
                 {isRegistering && (
                     <>
                         <label>Email</label>
-                        <input name="email" type="email" required />
+                        <input name="email" type="email" required/>
                     </>
                 )}
                 <label>Пароль</label>
-                <input name="password" type="password" required />
+                <input name="password" type="password" required/>
                 <button type="submit">{isRegistering ? 'Зарегистрироваться' : 'Войти'}</button>
             </form>
-            <button onClick={toggleMode} style={{ marginTop: '10px' }}>
+            <button onClick={toggleMode} style={{marginTop: '10px'}}>
                 {isRegistering ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
             </button>
             {error && <pre>{error}</pre>}

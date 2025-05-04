@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {authFetch} from "../utils/authFetch.js";
 
 function AutoUpdatePage() {
@@ -54,7 +54,7 @@ function AutoUpdatePage() {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: parseInt(id) })
+            body: JSON.stringify({id: parseInt(id)})
         });
 
         if (res.ok) {
@@ -70,19 +70,19 @@ function AutoUpdatePage() {
             <button onClick={logout}>Выйти</button>
 
             <form onSubmit={handleAutoUpdate}>
-                <input name="contestId" placeholder="Contest ID" required />
+                <input name="contestId" placeholder="Contest ID" required/>
                 <textarea name="participants" placeholder="Участники через запятую" required></textarea>
-                <input name="deadline" type="datetime-local" required />
-                <input name="yandexKey" placeholder="Yandex API key" required />
-                <input name="creds" placeholder="Google JSON креды" required />
-                <input name="sheetUrl" placeholder="Ссылка на таблицу" required />
-                <input name="sheetName" placeholder="Имя листа" required />
-                <input name="cron" placeholder="Cron выражение" required />
+                <input name="deadline" type="datetime-local" required/>
+                <input name="yandexKey" placeholder="Yandex API key" required/>
+                <input name="creds" placeholder="Google JSON креды" required/>
+                <input name="sheetUrl" placeholder="Ссылка на таблицу" required/>
+                <input name="sheetName" placeholder="Имя листа" required/>
+                <input name="cron" placeholder="Cron выражение" required/>
                 <button type="submit">Установить автообновление</button>
             </form>
 
             <form onSubmit={handleDelete}>
-                <input name="id" type="number" placeholder="ID автообновления для удаления" required />
+                <input name="id" type="number" placeholder="ID автообновления для удаления" required/>
                 <button type="submit">Удалить автообновление</button>
             </form>
 
