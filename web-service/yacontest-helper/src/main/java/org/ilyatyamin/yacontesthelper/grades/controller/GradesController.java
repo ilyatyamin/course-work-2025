@@ -1,10 +1,10 @@
 package org.ilyatyamin.yacontesthelper.grades.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.ilyatyamin.yacontesthelper.grades.dto.GoogleSheetsRequest;
 import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequest;
-import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequestWithString;
 import org.ilyatyamin.yacontesthelper.grades.dto.GradesResponse;
 import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService;
 import org.springframework.http.HttpHeaders;
@@ -15,16 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/grades")
 @AllArgsConstructor
+@Slf4j
 public class GradesController {
     private GradesService gradesService;
 
     @PostMapping
-    ResponseEntity<GradesResponse> getGrades(@RequestBody(required = false) GradesRequestWithString withString,
-                                             @RequestBody(required = false) GradesRequest withList) {
+    ResponseEntity<GradesResponse> getGrades(@RequestBody GradesRequest withList) {
         GradesResponse response;
-        if (withString != null) {
-            response = gradesService.getGradesList(withString);
-        } else if (withList != null) {
+        if (withList != null) {
             response = gradesService.getGradesList(withList);
         } else {
             throw new YaContestException(422, "Incorrect body found");

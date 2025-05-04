@@ -7,7 +7,10 @@ import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -86,8 +89,15 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
 
     private Boolean isSubmissionDelayed(String authorSubmissionTime,
                                         LocalDateTime deadline) {
-
-        LocalDateTime authorTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(authorSubmissionTime, LocalDateTime::from);
-        return deadline.isBefore(authorTime);
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            LocalDateTime authorTime = LocalDateTime.parse(authorSubmissionTime, formatter);
+            OffsetDateTime authorTimeWithZone = authorTime.atOffset(ZoneOffset.UTC);
+            return deadline.isBefore(authorTimeWithZone.toLocalDateTime());
+        } catch (DateTimeParseException e) {
+            System.err.println("Error parsing date: " + authorSubmissionTime);
+            log.error("Error parsing date: {}", e.getMessage());
+            return false;
+        }
     }
 }
