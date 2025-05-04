@@ -37,3 +37,21 @@ services:
 
     ports:
     - "5432:5432"
+
+  frontend:
+    container_name: frontend
+    #    restart: on-failure
+    image: vi
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=db_password
+      - TZ=Europe/Moscow
+    depends_on:
+      - database
+    env_file:
+      - .env
