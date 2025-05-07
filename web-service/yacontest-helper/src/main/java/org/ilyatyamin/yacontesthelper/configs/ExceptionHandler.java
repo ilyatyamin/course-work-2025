@@ -23,6 +23,9 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> baseException(Exception exception) {
+        if (exception instanceof ExpiredJwtException) {
+            return expiredTokenException((ExpiredJwtException)exception);
+        }
         logException(exception);
         return ResponseEntity
                 .status(500)
