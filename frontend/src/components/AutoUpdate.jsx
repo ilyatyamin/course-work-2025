@@ -1,94 +1,257 @@
 import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {authFetch} from "../utils/authFetch.js";
+import {authFetch} from '../utils/authFetch';
 
-function AutoUpdatePage() {
+const AutoUpdatePage = () => {
+    const [formData, setFormData] = useState({
+        contestId: '',
+        participants: '',
+        deadline: '',
+        yandexKey: '',
+        credentialsGoogle: '',
+        spreadsheetUrl: '',
+        sheetName: '',
+        cronExpression: '',
+        autoUpdateId: ''
+    });
+
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();
-    const token = localStorage.getItem('authToken');
 
-    function logout() {
-        localStorage.clear();
-        navigate('/login');
-    }
+    const handleChange = (e) => {
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
+    };
 
-    async function handleAutoUpdate(event) {
-        event.preventDefault();
-        const form = event.target;
+    const handleSetup = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = {
+                contestId: formData.contestId,
+                participants: formData.participants.split(',').map(p => p.trim()),
+                deadline: formData.deadline,
+                yandexKey: formData.yandexKey,
+                credentialsGoogle: formData.credentialsGoogle,
+                spreadsheetUrl: formData.spreadsheetUrl,
+                sheetName: formData.sheetName,
+                cronExpression: formData.cronExpression
+            };
 
-        const body = {
-            contestId: form.contestId.value,
-            participantsList: form.participants.value.split(',').map(p => p.trim()),
-            deadline: form.deadline.value,
-            yandexKey: form.yandexKey.value,
-            credentialsGoogle: form.creds.value,
-            spreadsheetUrl: form.sheetUrl.value,
-            sheetName: form.sheetName.value,
-            cronExpression: form.cron.value
-        };
+            const res = await authFetch('http://localhost:8080/api/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
 
-        const res = await authFetch('http://localhost:8080/api/update', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
-
-        if (res.ok) {
-            const data = await res.json();
-            setMessage(`Успешно установлено автообновление: id=${data.id}`);
-        } else {
-            setMessage('Ошибка при установке автообновления :(');
+            if (res.ok) {
+                const data = await res.json();
+                setMessage(`Автообновление установлено! ID: ${data.id}`);
+                setFormData(prev => ({...prev, autoUpdateId: data.id.toString()}));
+            } else {
+                const error = await res.json();
+                setMessage(`Ошибка: ${error.message}`);
+            }
+        } catch (err) {
+            setMessage(`Ошибка: ${err.message}`);
         }
-    }
+    };
 
-    async function handleDelete(event) {
-        event.preventDefault();
-        const id = event.target.id.value;
-
-        const res = await authFetch('http://localhost:8080/api/update', {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({id: parseInt(id)})
-        });
-
-        if (res.ok) {
-            setMessage('Удалено автообновление');
-        } else {
-            setMessage('Ошибка при удалении');
+    const handleRemove = async (e) => {
+        e.preventDefault();
+        if (!formData.autoUpdateId) {
+            setMessage('Введите ID автообновления для удаления');
+            return;
         }
-    }
+
+        try {
+            const res = await authFetch('http://localhost:8080/api/update', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: parseInt(formData.autoUpdateId)
+                })
+            });
+
+            if (res.ok) {
+                setMessage('Автообновление удалено!');
+                setFormData(prev => ({
+                    ...prev,
+                    autoUpdateId: ''
+                }));
+            } else {
+                const error = await res.json();
+                setMessage(`Ошибка: ${error.message}`);
+            }
+        } catch (err) {
+            setMessage(`Ошибка: ${err.message}`);
+        }
+    };
 
     return (
-        <div className="container">
-            <h1>Настройка автообновления</h1>
-            <button onClick={logout}>Выйти</button>
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto">
+                <div className="bg-white shadow rounded-lg p-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+                        Настройка автообновления
+                    </h1>
 
-            <form onSubmit={handleAutoUpdate}>
-                <input name="contestId" placeholder="Contest ID" required/>
-                <textarea name="participants" placeholder="Участники через запятую" required></textarea>
-                <input name="deadline" type="datetime-local" required/>
-                <input name="yandexKey" placeholder="Yandex API key" required/>
-                <input name="creds" placeholder="Google JSON креды" required/>
-                <input name="sheetUrl" placeholder="Ссылка на таблицу" required/>
-                <input name="sheetName" placeholder="Имя листа" required/>
-                <input name="cron" placeholder="Cron выражение" required/>
-                <button type="submit">Установить автообновление</button>
-            </form>
+                    <form className="space-y-6">
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <div>
+                                <label htmlFor="contestId" className="block text-sm font-medium text-gray-700">
+                                    Contest ID
+                                </label>
+                                <input
+                                    type="text"
+                                    id="contestId"
+                                    name="contestId"
+                                    value={formData.contestId}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
 
-            <form onSubmit={handleDelete}>
-                <input name="id" type="number" placeholder="ID автообновления для удаления" required/>
-                <button type="submit">Удалить автообновление</button>
-            </form>
+                            <div>
+                                <label htmlFor="participants" className="block text-sm font-medium text-gray-700">
+                                    Участники (через запятую)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="participants"
+                                    name="participants"
+                                    value={formData.participants}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
 
-            <pre>{message}</pre>
+                            <div>
+                                <label htmlFor="deadline" className="block text-sm font-medium text-gray-700">
+                                    Дедлайн
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    id="deadline"
+                                    name="deadline"
+                                    value={formData.deadline}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="yandexKey" className="block text-sm font-medium text-gray-700">
+                                    Yandex API key
+                                </label>
+                                <input
+                                    type="text"
+                                    id="yandexKey"
+                                    name="yandexKey"
+                                    value={formData.yandexKey}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+
+                            <div className="sm:col-span-2">
+                                <label htmlFor="credentialsGoogle" className="block text-sm font-medium text-gray-700">
+                                    Google JSON ключ
+                                </label>
+                                <textarea
+                                    id="credentialsGoogle"
+                                    name="credentialsGoogle"
+                                    rows={3}
+                                    value={formData.credentialsGoogle}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="spreadsheetUrl" className="block text-sm font-medium text-gray-700">
+                                    Ссылка на таблицу
+                                </label>
+                                <input
+                                    type="text"
+                                    id="spreadsheetUrl"
+                                    name="spreadsheetUrl"
+                                    value={formData.spreadsheetUrl}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="sheetName" className="block text-sm font-medium text-gray-700">
+                                    Имя листа
+                                </label>
+                                <input
+                                    type="text"
+                                    id="sheetName"
+                                    name="sheetName"
+                                    value={formData.sheetName}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="cronExpression" className="block text-sm font-medium text-gray-700">
+                                    Cron выражение
+                                </label>
+                                <input
+                                    type="text"
+                                    id="cronExpression"
+                                    name="cronExpression"
+                                    placeholder="0 0 * * * *"
+                                    value={formData.cronExpression}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="autoUpdateId" className="block text-sm font-medium text-gray-700">
+                                    ID автообновления (для удаления)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="autoUpdateId"
+                                    name="autoUpdateId"
+                                    value={formData.autoUpdateId}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                />
+                            </div>
+                        </div>
+
+                        {message && (
+                            <div
+                                className={`p-4 rounded-md ${message.includes('Ошибка') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                                {message}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={handleRemove}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                            >
+                                Удалить автообновление
+                            </button>
+                            <button
+                                onClick={handleSetup}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Установить автообновление
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
-}
+};
 
 export default AutoUpdatePage;
