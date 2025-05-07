@@ -208,7 +208,7 @@ function ReportPage() {
                                     value={formData.contestId}
                                     onChange={handleChange}
                                     required
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -223,7 +223,7 @@ function ReportPage() {
                                     value={formData.participantsList}
                                     onChange={handleChange}
                                     required
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -238,7 +238,7 @@ function ReportPage() {
                                     value={formData.deadline}
                                     onChange={handleChange}
                                     required
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -253,7 +253,7 @@ function ReportPage() {
                                     value={formData.yandexKey}
                                     onChange={handleChange}
                                     required
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -264,7 +264,7 @@ function ReportPage() {
                                     type="checkbox"
                                     checked={formData.plag}
                                     onChange={handleChange}
-                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                                 />
                                 <label htmlFor="plag" className="ml-2 block text-sm text-gray-700">
                                     Проверка на плагиат
@@ -282,7 +282,7 @@ function ReportPage() {
                                         placeholder="MOSS key (если надо)"
                                         value={formData.mossKey}
                                         onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                     />
                                 </div>
                             )}
@@ -296,7 +296,7 @@ function ReportPage() {
                                     name="format"
                                     value={formData.format}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 >
                                     <option value="PDF">PDF</option>
                                     <option value="MD">Markdown</option>
@@ -308,7 +308,7 @@ function ReportPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? 'Обработка...' : 'Сформировать'}
                             </button>
@@ -374,7 +374,7 @@ function ReportPage() {
                                         name="creds"
                                         required
                                         rows={3}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                     />
                                 </div>
 
@@ -386,7 +386,7 @@ function ReportPage() {
                                         id="sheetUrl"
                                         name="sheetUrl"
                                         required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                     />
                                 </div>
 
@@ -398,14 +398,14 @@ function ReportPage() {
                                         id="listName"
                                         name="listName"
                                         required
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                     />
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Отправить в Google Sheets
                                 </button>

@@ -108,7 +108,7 @@ const AutoUpdatePage = () => {
                                     name="contestId"
                                     value={formData.contestId}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -122,7 +122,7 @@ const AutoUpdatePage = () => {
                                     name="participants"
                                     value={formData.participants}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -136,7 +136,7 @@ const AutoUpdatePage = () => {
                                     name="deadline"
                                     value={formData.deadline}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -150,7 +150,7 @@ const AutoUpdatePage = () => {
                                     name="yandexKey"
                                     value={formData.yandexKey}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -164,7 +164,7 @@ const AutoUpdatePage = () => {
                                     rows={3}
                                     value={formData.credentialsGoogle}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -178,7 +178,7 @@ const AutoUpdatePage = () => {
                                     name="spreadsheetUrl"
                                     value={formData.spreadsheetUrl}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -192,7 +192,7 @@ const AutoUpdatePage = () => {
                                     name="sheetName"
                                     value={formData.sheetName}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -207,7 +207,7 @@ const AutoUpdatePage = () => {
                                     placeholder="0 0 * * * *"
                                     value={formData.cronExpression}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
 
@@ -221,7 +221,7 @@ const AutoUpdatePage = () => {
                                     name="autoUpdateId"
                                     value={formData.autoUpdateId}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
                         </div>
@@ -242,7 +242,7 @@ const AutoUpdatePage = () => {
                             </button>
                             <button
                                 onClick={handleSetup}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                             >
                                 Установить автообновление
                             </button>

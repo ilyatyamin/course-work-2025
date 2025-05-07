@@ -17,4 +17,3 @@ public class UtilsServiceImpl implements UtilsService {
     }
 }
 
-// I`m Uno the Borzoi

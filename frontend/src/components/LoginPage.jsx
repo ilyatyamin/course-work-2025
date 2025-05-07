@@ -43,7 +43,7 @@ function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-100 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div className="p-8">
@@ -81,7 +81,7 @@ function LoginPage() {
                                     required
                                     minLength={5}
                                     maxLength={50}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition duration-200"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition duration-200"
                                     placeholder="Введите ваш логин"
                                 />
                             </div>
@@ -98,7 +98,7 @@ function LoginPage() {
                                         required
                                         minLength={5}
                                         maxLength={255}
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition duration-200"
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition duration-200"
                                         placeholder="Введите ваш email"
                                     />
                                 </div>
@@ -115,14 +115,14 @@ function LoginPage() {
                                     required
                                     minLength={5}
                                     maxLength={255}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition duration-200"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition duration-200"
                                     placeholder="Введите ваш пароль"
                                 />
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-md"
+                                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-md"
                             >
                                 {isRegistering ? 'Зарегистрироваться' : 'Войти'}
                             </button>
@@ -142,7 +142,7 @@ function LoginPage() {
 
                             <button
                                 onClick={toggleMode}
-                                className="w-full mt-6 text-indigo-600 hover:text-indigo-800 font-medium py-2 px-4 rounded-lg transition duration-200"
+                                className="w-full mt-6 text-orange-600 hover:text-orange-800 font-medium py-2 px-4 rounded-lg transition duration-200"
                             >
                                 {isRegistering ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
                             </button>
