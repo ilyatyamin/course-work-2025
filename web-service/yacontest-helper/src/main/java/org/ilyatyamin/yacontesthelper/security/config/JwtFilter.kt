@@ -4,10 +4,13 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.ilyatyamin.yacontesthelper.error.AuthException
+import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.security.dao.TokenType
 import org.ilyatyamin.yacontesthelper.security.service.JwtTokenService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -37,31 +40,35 @@ class JwtFilter : OncePerRequestFilter() {
         filterChain: FilterChain
     ) {
         val authHeader = request.getHeader(AUTHORIZATION_HEADER)
-
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+        if (authHeader == null) {
             filterChain.doFilter(request, response)
             return
         }
 
         val token = authHeader.substring(BEGIN_BEARER_INDEX)
-        jwtTokenService.checkThatTokenExistsAndNotExpired(token, TokenType.AUTH)
 
-        val username = jwtTokenService.extractUsername(token)
-        if (username.isNotEmpty() && SecurityContextHolder.getContext().authentication == null) {
-            val userDetails = userService.userDetailsService().loadUserByUsername(username)
+        try {
+            jwtTokenService.checkThatTokenExistsAndNotExpired(token, TokenType.AUTH)
+            val username = jwtTokenService.extractUsername(token)
 
-            val context = SecurityContextHolder.createEmptyContext()
-            val authToken = UsernamePasswordAuthenticationToken(
-                userDetails,
-                "",
-                userDetails.authorities
-            )
+            if (username.isNotEmpty() && SecurityContextHolder.getContext().authentication == null) {
+                val userDetails = userService.userDetailsService().loadUserByUsername(username)
 
-            authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-            context.authentication = authToken
-            SecurityContextHolder.setContext(context)
+                val context = SecurityContextHolder.createEmptyContext()
+                val authToken = UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    "",
+                    userDetails.authorities
+                )
+
+                authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+                context.authentication = authToken
+                SecurityContextHolder.setContext(context)
+            }
+
+            filterChain.doFilter(request, response)
+        } catch (ex: Exception) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token")
         }
-
-        filterChain.doFilter(request, response)
     }
 }

@@ -15,7 +15,7 @@ import java.io.IOException
 
 
 @Component
-internal class FilterChainExceptionHandler(
+class FilterChainExceptionHandler(
     @Autowired @Qualifier("handlerExceptionResolver") private val resolver: HandlerExceptionResolver
 ) : OncePerRequestFilter() {
     private val log: Logger = LoggerFactory.getLogger(javaClass)

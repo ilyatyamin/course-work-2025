@@ -10,11 +10,11 @@ public class CustomErrorDecoderFeign implements ErrorDecoder {
     @Override
     public Exception decode(String s, Response response) {
         if (response.status() == 401) {
-            return new YaContestException(HttpStatus.UNAUTHORIZED.value(), ExceptionMessages.YACONTEST_WRONG_KEY.name());
+            return new YaContestException(HttpStatus.FORBIDDEN.value(), ExceptionMessages.YACONTEST_WRONG_KEY.getMessage());
         } else if (response.status() == 403) {
-            return new YaContestException(HttpStatus.FORBIDDEN.value(), ExceptionMessages.NO_ACCESS_TO_CONTEST.name());
+            return new YaContestException(HttpStatus.FORBIDDEN.value(), ExceptionMessages.NO_ACCESS_TO_CONTEST.getMessage());
         } else if (response.status() == 404) {
-            return new YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.CONTEST_NOT_FOUND.name());
+            return new YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.CONTEST_NOT_FOUND.getMessage());
         }
         return new YaContestException(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.body().toString());
     }

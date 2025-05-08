@@ -22,6 +22,7 @@ public enum ExceptionMessages {
     PROVIDED_AUTH_MUST_REFRESH("You provided auth token but method need refresh token."),
     PROVIDED_REFRESH_MUST_AUTH("You provided refress token but method need auth token."),
     TOKEN_DOES_NOT_EXIST("Your token does not exist."),
+    AUTHORIZE("Please, authorize your account."),
     ;
 
     private final String message;
