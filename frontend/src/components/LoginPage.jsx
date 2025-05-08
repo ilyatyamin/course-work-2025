@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {authFetch} from '../utils/authFetch';
+import {getErrorMessage} from "../utils/errors.js";
 
 function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false);
@@ -35,10 +36,11 @@ function LoginPage() {
                 navigate('/report');
             } else {
                 const json = await res.json();
-                setError(json.message || 'Произошла ошибка');
+                setError(getErrorMessage(json));
             }
         } catch (err) {
-            setError('Не удалось подключиться к серверу');
+            const json = await err.json();
+            setError(getErrorMessage(json));
         }
     }
 

@@ -12,7 +12,7 @@ export async function authFetch(input, init = {}) {
     }
 
     let response = await fetch(input, init);
-    if (response.status === 401 && !isAuthRequest) {
+    if (response.status === 403 && !isAuthRequest) {
         const refreshToken = localStorage.getItem('refreshToken');
         const refreshResponse = await fetch('/api/login/refreshToken', {
             method: 'POST',

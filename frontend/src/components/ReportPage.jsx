@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authFetch } from "../utils/authFetch";
+import {getErrorMessage} from "../utils/errors.js";
 
 function ReportPage() {
     const [formData, setFormData] = useState({
@@ -70,10 +71,11 @@ function ReportPage() {
                 setTableId(data.tableId);
             } else {
                 const json = await res.json();
-                setError(json.message || 'Произошла ошибка');
+                setError(getErrorMessage(json));
             }
         } catch (err) {
-            setError('Не удалось подключиться к серверу');
+            const json = await err.json();
+            setError(getErrorMessage(json));
         } finally {
             setIsLoading(false);
         }
@@ -111,10 +113,11 @@ function ReportPage() {
                 a.click();
             } else {
                 const json = await res.json();
-                setError(json.message || 'Произошла ошибка');
+                setError(getErrorMessage(json));
             }
         } catch (err) {
-            setError('Не удалось подключиться к серверу');
+            const json = await err.json();
+            setError(getErrorMessage(json));
         } finally {
             setIsLoading(false);
         }
@@ -139,10 +142,11 @@ function ReportPage() {
                 a.click();
             } else {
                 const json = await res.json();
-                setError(json.message || 'Произошла ошибка');
+                setError(getErrorMessage(json));
             }
         } catch (err) {
-            setError('Не удалось подключиться к серверу');
+            const json = await err.json();
+            setError(getErrorMessage(json));
         } finally {
             setIsLoading(false);
         }
@@ -172,10 +176,11 @@ function ReportPage() {
                 alert('Отправлено в Google Sheets');
             } else {
                 const json = await res.json();
-                setError(json.message || 'Произошла ошибка');
+                setError(getErrorMessage(json));
             }
         } catch (err) {
-            setError('Не удалось подключиться к серверу');
+            const json = await err.json();
+            setError(getErrorMessage(json));
         } finally {
             setIsLoading(false);
         }

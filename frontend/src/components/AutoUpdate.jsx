@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {authFetch} from '../utils/authFetch';
+import {getErrorMessage} from "../utils/errors.js";
 
 const AutoUpdatePage = () => {
     const [formData, setFormData] = useState({
@@ -48,10 +49,11 @@ const AutoUpdatePage = () => {
                 setFormData(prev => ({...prev, autoUpdateId: data.id.toString()}));
             } else {
                 const error = await res.json();
-                setMessage(`Ошибка: ${error.message}`);
+                setMessage(getErrorMessage(error));
             }
         } catch (err) {
-            setMessage(`Ошибка: ${err.message}`);
+            const error = await err.json();
+            setMessage(getErrorMessage(error));
         }
     };
 
@@ -81,10 +83,11 @@ const AutoUpdatePage = () => {
                 }));
             } else {
                 const error = await res.json();
-                setMessage(`Ошибка: ${error.message}`);
+                setMessage(getErrorMessage(error));
             }
         } catch (err) {
-            setMessage(`Ошибка: ${err.message}`);
+            const error = await err.json();
+            setMessage(getErrorMessage(error));
         }
     };
 
