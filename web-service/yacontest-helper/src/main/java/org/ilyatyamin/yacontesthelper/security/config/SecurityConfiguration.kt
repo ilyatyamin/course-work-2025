@@ -22,13 +22,11 @@ import org.springframework.web.cors.CorsConfiguration
 
 @Configuration
 @EnableWebSecurity
-open class SecurityConfiguration(private val jwtFilter: JwtFilter) {
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var filterChainExceptionHandler: FilterChainExceptionHandler
-
+open class SecurityConfiguration(
+    private val jwtFilter: JwtFilter,
+    private var userService: UserService,
+    private var filterChainExceptionHandler: FilterChainExceptionHandler
+) {
     @Bean
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
