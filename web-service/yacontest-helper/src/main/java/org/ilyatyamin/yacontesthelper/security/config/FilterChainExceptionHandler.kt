@@ -18,8 +18,6 @@ import java.io.IOException
 class FilterChainExceptionHandler(
     @Autowired @Qualifier("handlerExceptionResolver") private val resolver: HandlerExceptionResolver
 ) : OncePerRequestFilter() {
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
-
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,

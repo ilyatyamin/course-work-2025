@@ -1,11 +1,11 @@
-package org.ilyatyamin.yacontesthelper.configs;
+package org.ilyatyamin.yacontesthelper.configs
 
-import feign.codec.ErrorDecoder;
-import org.springframework.context.annotation.Bean;
+import feign.codec.ErrorDecoder
+import org.springframework.context.annotation.Bean
 
-public class BeanConfigs {
+class BeanConfigs {
     @Bean
-    public ErrorDecoder errorDecoder() {
-        return new CustomErrorDecoderFeign();
+    fun errorDecoder(): ErrorDecoder {
+        return CustomErrorDecoderFeign()
     }
 }

@@ -10,6 +10,7 @@ import org.ilyatyamin.yacontesthelper.security.dao.TokenDao
 import org.ilyatyamin.yacontesthelper.security.dao.TokenType
 import org.ilyatyamin.yacontesthelper.security.dao.UserDao
 import org.ilyatyamin.yacontesthelper.security.repository.TokenRepository
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -18,16 +19,13 @@ import java.util.function.Function
 import javax.crypto.SecretKey
 
 @Service
-class JwtTokenService(private val tokenRepository: TokenRepository) {
-    @Value("\${security.jwt-secret}")
-    private val jwtSecret: String? = null
-
-    @Value("\${security.auth-validity-period-seconds}")
-    private val authValidityPeriod: Long? = null
-
-    @Value("\${security.refresh-validity-period-seconds}")
-    private val refreshValidityPeriod: Long? = null
-
+class JwtTokenService(
+    private val tokenRepository: TokenRepository,
+    @Value("\${security.jwt-secret}") private val jwtSecret: String?,
+    @Value("\${security.auth-validity-period-seconds}") private val authValidityPeriod: Long,
+    @Value("\${security.refresh-validity-period-seconds}") private val refreshValidityPeriod: Long
+) {
+    private val logger = LoggerFactory.getLogger(JwtTokenService::class.java)
     internal val tokenType: String = "BEARER"
 
     internal fun extractUsername(token: String): String {
@@ -54,13 +52,16 @@ class JwtTokenService(private val tokenRepository: TokenRepository) {
     internal fun checkThatTokenExistsAndNotExpired(token: String, tokenType: TokenType) {
         val tokenEntity = tokenRepository.findByPayload(token)
         if (tokenEntity.isEmpty) {
+            logger.info("[JWT] Token ${tokenType.name} not found")
             throw AuthException(
                 HttpStatus.UNAUTHORIZED.value(),
                 ExceptionMessages.TOKEN_DOES_NOT_EXIST.message
             )
         }
+
         val tokenDao = tokenEntity.get()
         if (tokenDao.tokenType != tokenType) {
+            logger.info("[JWT] User provided not needed token type (provided ${tokenType.name})")
             throw AuthException(
                 HttpStatus.UNAUTHORIZED.value(),
                 ExceptionMessages.PROVIDED_REFRESH_MUST_AUTH.message
@@ -72,6 +73,7 @@ class JwtTokenService(private val tokenRepository: TokenRepository) {
                 !extractClaim(token) { obj: Claims -> obj.expiration }.before(Date())
 
         if (!isNotExpired) {
+            logger.info("[JWT] User's token is expired")
             throw AuthException(
                 HttpStatus.UNAUTHORIZED.value(),
                 ExceptionMessages.TOKEN_EXPIRED.message
