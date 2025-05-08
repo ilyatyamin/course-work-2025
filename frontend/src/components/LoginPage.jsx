@@ -39,6 +39,7 @@ function LoginPage() {
                 setError(getErrorMessage(json));
             }
         } catch (err) {
+            console.log(err);
             const json = await err.json();
             setError(getErrorMessage(json));
         }

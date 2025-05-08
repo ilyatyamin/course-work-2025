@@ -1,40 +1,92 @@
+import {toast} from "react-toastify";
+
+const AUTH_TOKEN_KEY = 'authToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
+const REFRESH_TOKEN_ENDPOINT = 'http://localhost:8080/api/login/refreshToken';
+const LOGIN_PAGE_URL = '/login';
+const TOKEN_EXPIRED_MESSAGE = "Your token has expired. Please refresh it.";
+const AUTH_HEADER_PREFIX = 'Bearer ';
+
 export async function authFetch(input, init = {}) {
     const url = typeof input === 'string' ? input : input.url;
-
     const isAuthRequest = url.includes('/api/login') || url.includes('/api/register');
-    const token = localStorage.getItem('authToken');
 
     if (!isAuthRequest) {
-        init.headers = {
-            ...(init.headers || {}),
-            Authorization: `Bearer ${token}`,
-        };
+        const token = localStorage.getItem(AUTH_TOKEN_KEY);
+        if (token) {
+            init.headers = {
+                ...(init.headers || {}),
+                Authorization: `${AUTH_HEADER_PREFIX}${token}`,
+            };
+        }
     }
 
     let response = await fetch(input, init);
-    if (response.status === 403 && !isAuthRequest) {
-        const refreshToken = localStorage.getItem('refreshToken');
-        const refreshResponse = await fetch('/api/login/refreshToken', {
+    const contentLength = response.headers.get('Content-Length');
+    const bodyLength = parseInt(contentLength, 10);
+
+    if (response.status === 401) {
+        try {
+            const responseBody = await response.clone().json();
+            if (responseBody?.message === TOKEN_EXPIRED_MESSAGE) {
+                const newResponse = await attemptTokenRefresh(input, init);
+                if (newResponse) {
+                    return newResponse;
+                }
+            }
+        } catch (error) {
+            console.error("Error parsing response body or refreshing token:", error);
+        }
+        if (!isAuthRequest) {
+            clearAuthDataAndRedirectToLogin();
+        }
+    } else if (response.status === 403 && bodyLength === 0) {
+        toast.error("Вы не авторизованы :(")
+        clearAuthDataAndRedirectToLogin();
+    }
+    return response;
+}
+
+async function attemptTokenRefresh(input, init) {
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+
+    if (!refreshToken) {
+        console.warn("No refresh token found.");
+        clearAuthDataAndRedirectToLogin();
+        return null;
+    }
+
+    try {
+        const refreshResponse = await fetch(REFRESH_TOKEN_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refreshToken }),
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({refreshToken}),
         });
 
         if (refreshResponse.ok) {
             const data = await refreshResponse.json();
-            localStorage.setItem('authToken', data.authToken);
-            localStorage.setItem('refreshToken', data.refreshToken);
+            localStorage.setItem(AUTH_TOKEN_KEY, data.authToken);
+            localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
+
             init.headers = {
                 ...(init.headers || {}),
-                Authorization: `Bearer ${data.authToken}`,
+                Authorization: `${AUTH_HEADER_PREFIX}${data.authToken}`,
             };
 
-            response = await fetch(input, init);
+            return await fetch(input, init);
         } else {
-            localStorage.clear();
-            window.location.href = '/login';
+            console.error("Token refresh failed:", refreshResponse.status, refreshResponse.statusText);
+            clearAuthDataAndRedirectToLogin();
+            return null;
         }
+    } catch (error) {
+        console.error("Error refreshing token:", error);
+        clearAuthDataAndRedirectToLogin();
+        return null;
     }
+}
 
-    return response;
+function clearAuthDataAndRedirectToLogin() {
+    localStorage.clear();
+    window.location.href = LOGIN_PAGE_URL;
 }
