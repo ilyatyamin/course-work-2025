@@ -1,43 +1,45 @@
-package org.ilyatyamin.yacontesthelper.utils;
+package org.ilyatyamin.yacontesthelper.utils
 
-import java.util.List;
+import kotlin.math.max
 
-class MarkdownTableHelper {
-    public static <T> String generateRow(String header, List<T> values,
-                                         Integer headerLength, Integer cellLength) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("| ");
-        sb.append(header);
-        sb.append(" ".repeat(Math.max(headerLength - header.length(), 0)));
-        sb.append("| ");
-        for (T value : values) {
-            sb.append(value.toString());
-            sb.append(" ".repeat(Math.max(cellLength - value.toString().length(), 0)));
-            sb.append("| ");
+internal object MarkdownTableHelper {
+    fun <T> generateRow(
+        header: String, values: List<T>,
+        headerLength: Int, cellLength: Int
+    ): String {
+        val sb = StringBuilder()
+        sb.append("| ")
+        sb.append(header)
+        sb.append(" ".repeat(max((headerLength - header.length).toDouble(), 0.0).toInt()))
+        sb.append("| ")
+        for (value in values) {
+            sb.append(value.toString())
+            sb.append(" ".repeat(max((cellLength - value.toString().length).toDouble(), 0.0).toInt()))
+            sb.append("| ")
         }
-        sb.append("\n");
-        return sb.toString();
+        sb.append("\n")
+        return sb.toString()
     }
 
-    public static String generateSpecialTableDivide(Integer cellCount, Integer headerLength, Integer cellLength) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("|:");
-        sb.append("-".repeat(headerLength));
-        for (int i = 0; i < cellCount; i++) {
-            sb.append("|:");
-            sb.append("-".repeat(cellLength));
+    fun generateSpecialTableDivide(cellCount: Int, headerLength: Int, cellLength: Int): String {
+        val sb = StringBuilder()
+        sb.append("|:")
+        sb.append("-".repeat(headerLength))
+        for (i in 0..<cellCount) {
+            sb.append("|:")
+            sb.append("-".repeat(cellLength))
         }
-        sb.append("|\n");
-        return sb.toString();
+        sb.append("|\n")
+        return sb.toString()
     }
 
-    public static <T> Integer calculateCellLength(List<T> list) {
-        int cellLength = 0;
-        for (T value : list) {
-            if (value.toString().length() > cellLength) {
-                cellLength = value.toString().length();
+    fun <T> calculateCellLength(list: List<T>): Int {
+        var cellLength = 0
+        for (value in list) {
+            if (value.toString().length > cellLength) {
+                cellLength = value.toString().length
             }
         }
-        return cellLength + 1;
+        return cellLength + 1
     }
 }

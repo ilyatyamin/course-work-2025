@@ -1,85 +1,55 @@
-package org.ilyatyamin.yacontesthelper.utils;
+package org.ilyatyamin.yacontesthelper.utils
 
-import org.yaml.snakeyaml.error.Mark;
+class MarkdownFormatter private constructor() {
+    private val sb = StringBuilder()
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class MarkdownFormatter {
-    private static final Integer DEFAULT_INDENT_SIZE = 8;
-    private MarkdownFormatter() {
+    companion object {
+        private const val DEFAULT_INDENT_SIZE = 8
+        fun create() = MarkdownFormatter()
     }
 
-    private final StringBuilder sb = new StringBuilder();
+    fun get(): String = sb.toString()
 
-    public static MarkdownFormatter create() {
-        return new MarkdownFormatter();
+    fun addHeader(title: String?, level: HeaderLevel): MarkdownFormatter = apply {
+        sb.append("#".repeat(level.level))
+            .append(" ")
+            .append(title)
+            .append("\n")
     }
 
-    public String get() {
-        return sb.toString();
+    fun addText(text: String?): MarkdownFormatter = apply {
+        sb.append(text)
+            .append("\n")
     }
 
-    public MarkdownFormatter addHeader(String title, HeaderLevel level) {
-        sb.append("#".repeat(level.getLevel()));
-        sb.append(" ");
-        sb.append(title);
-        sb.append("\n");
-        return this;
+    fun addCode(code: String?): MarkdownFormatter = apply {
+        sb.append("\n").append(code).append("\n")
     }
 
-    public MarkdownFormatter addText(String text) {
-        sb.append(text);
-        sb.append("\n");
-        return this;
-    }
+    fun <K, V, L> addTable(table: Map<K, Map<V, L>?>): MarkdownFormatter = apply {
+        val keys = table.keys.toList()
+        val cellLength = MarkdownTableHelper.calculateCellLength(keys)
+        val headerLength =
+            table.values.firstOrNull()?.keys?.let { MarkdownTableHelper.calculateCellLength(it.toList()) } ?: 0
 
-    public MarkdownFormatter addCode(String code) {
-        sb.append("```\n");
-        sb.append(code);
-        sb.append("\n```\n");
-        return this;
-    }
+        sb.append(MarkdownTableHelper.generateRow("", keys, headerLength, cellLength))
+        sb.append(MarkdownTableHelper.generateSpecialTableDivide(table.size, headerLength, cellLength))
 
-    public <K, V, L> MarkdownFormatter addTable(Map<K, Map<V, L>> table) {
-        int cellLength = MarkdownTableHelper.calculateCellLength(table.keySet().stream().toList());
-        int headerLength = table.values().stream()
-                .findFirst()
-                .map(map -> MarkdownTableHelper.calculateCellLength(map.keySet().stream().toList()))
-                .orElse(0);
+        val rows = table.values.firstOrNull()?.keys?.toList() ?: emptyList()
 
-        sb.append(MarkdownTableHelper.generateRow("", table.keySet().stream().toList(), headerLength, cellLength));
-        sb.append(MarkdownTableHelper.generateSpecialTableDivide(table.size(), headerLength, cellLength));
-
-        List<V> rows = new ArrayList<>();
-        for (var entry : table.entrySet()) {
-            rows.addAll(entry.getValue().keySet());
-            break;
+        for (row in rows) {
+            val cells = keys.map { table[it]?.get(row) }
+            sb.append(MarkdownTableHelper.generateRow(row.toString(), cells, headerLength, cellLength))
         }
-
-        for (var row : rows) {
-            List<L> cells = new ArrayList<>();
-            for (var entry : table.keySet()) {
-                cells.add(table.get(entry).get(row));
-            }
-
-            sb.append(MarkdownTableHelper.generateRow(row.toString(), cells, headerLength, cellLength));
-        }
-
-        return this;
     }
 
-    public <Key, Value> MarkdownFormatter addOneDimTable(Map<Key, Value> table) {
-        int headerLength = DEFAULT_INDENT_SIZE;
-        int cellLength = MarkdownTableHelper.calculateCellLength(table.values().stream().toList());
+    fun <Key, Value> addOneDimTable(table: Map<Key, Value>): MarkdownFormatter = apply {
+        val headerLength = DEFAULT_INDENT_SIZE
+        val values = table.values.toList()
+        val cellLength = MarkdownTableHelper.calculateCellLength(values)
 
-        sb.append(MarkdownTableHelper.generateRow("", table.keySet().stream().toList(), headerLength, cellLength));
-        sb.append(MarkdownTableHelper.generateSpecialTableDivide(table.size(), headerLength, cellLength));
-        sb.append(MarkdownTableHelper.generateRow("Amount", table.values().stream().toList(), headerLength, cellLength));
-
-        return this;
+        sb.append(MarkdownTableHelper.generateRow("", table.keys.toList(), headerLength, cellLength))
+        sb.append(MarkdownTableHelper.generateSpecialTableDivide(table.size, headerLength, cellLength))
+        sb.append(MarkdownTableHelper.generateRow("Amount", values, headerLength, cellLength))
     }
-
-
 }

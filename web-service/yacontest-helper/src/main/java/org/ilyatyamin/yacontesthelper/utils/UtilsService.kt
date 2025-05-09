@@ -1,8 +1,8 @@
-package org.ilyatyamin.yacontesthelper.utils;
+package org.ilyatyamin.yacontesthelper.utils
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalDateTime
+import java.util.*
 
-public interface UtilsService {
-    Optional<LocalDateTime> processLocalDateTime(String localDateTime);
+interface UtilsService {
+    fun processLocalDateTime(localDateTime: String?): Optional<LocalDateTime>
 }

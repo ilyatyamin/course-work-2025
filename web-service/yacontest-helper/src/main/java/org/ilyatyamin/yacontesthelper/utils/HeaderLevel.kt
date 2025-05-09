@@ -1,14 +1,7 @@
-package org.ilyatyamin.yacontesthelper.utils;
+package org.ilyatyamin.yacontesthelper.utils
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public enum HeaderLevel {
+enum class HeaderLevel(val level: Int) {
     FIRST(1),
     SECOND(2),
     THIRD(3);
-
-    private final Integer level;
 }
