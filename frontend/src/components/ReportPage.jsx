@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authFetch } from "../utils/authFetch";
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {authFetch} from "../utils/authFetch";
 import {handleBusinessError} from "../utils/errors.js";
 import {formatDateForBackend} from "../utils/datetimeTools.js";
+import {finishLoading, FinishType, Jobs, startLoading} from "../utils/loadingProcess.js";
+import DataTable from '../utils/tables.jsx'
 
 function ReportPage() {
     const [formData, setFormData] = useState({
@@ -19,10 +21,11 @@ function ReportPage() {
     const [tableId, setTableId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [gradesData, setGradesData] = useState(null);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const {name, value, type, checked} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
@@ -33,8 +36,11 @@ function ReportPage() {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+        setGradesData('')
+        setTableId('')
 
         const deadlineValue = formData.deadline === '' ? null : formatDateForBackend(formData.deadline);
+        const spinnerId = startLoading(Jobs.REPORT)
         try {
             const payload = {
                 contestId: formData.contestId,
@@ -53,13 +59,14 @@ function ReportPage() {
 
             if (res.ok) {
                 const data = await res.json();
-                setOutput(JSON.stringify(data.results, null, 2));
+                finishLoading(spinnerId)
                 setTableId(data.tableId);
+                setGradesData(data.results);
             } else {
-                handleBusinessError(res)
+                await handleBusinessError(res, spinnerId)
             }
         } catch (err) {
-            handleBusinessError(err)
+            await handleBusinessError(err, spinnerId)
         } finally {
             setIsLoading(false);
         }
@@ -69,6 +76,7 @@ function ReportPage() {
         setIsLoading(true);
         setError('');
 
+        const spinnerId = startLoading(Jobs.REPORT_FILE)
         try {
             const deadlineValue = formData.deadline === '' ? null : formatDateForBackend(formData.deadline);
             const payload = {
@@ -97,10 +105,10 @@ function ReportPage() {
                 a.download = `report.${formData.format.toLowerCase()}`;
                 a.click();
             } else {
-                handleBusinessError(res)
+                await handleBusinessError(res, spinnerId)
             }
         } catch (err) {
-            handleBusinessError(err)
+            await handleBusinessError(err, spinnerId)
         } finally {
             setIsLoading(false);
         }
@@ -110,10 +118,11 @@ function ReportPage() {
         setIsLoading(true);
         setError('');
 
+        const spinnerId = startLoading(Jobs.REPORT_FILE)
         try {
             const res = await authFetch(`http://localhost:8080/api/grades/${tableId}/xlsx`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: {'Content-Type': 'application/json'}
             });
 
             if (res.ok) {
@@ -124,10 +133,10 @@ function ReportPage() {
                 a.download = 'report.xlsx';
                 a.click();
             } else {
-                handleBusinessError(res)
+                await handleBusinessError(res, spinnerId)
             }
         } catch (err) {
-            handleBusinessError(err)
+            await handleBusinessError(err, spinnerId)
         } finally {
             setIsLoading(false);
         }
@@ -138,6 +147,7 @@ function ReportPage() {
         setIsLoading(true);
         setError('');
 
+        const spinnerId = startLoading(Jobs.SHEETS_LOADING)
         try {
             const form = e.target;
             const res = await authFetch(`http://localhost:8080/api/grades/${tableId}/googleSheets`, {
@@ -154,12 +164,12 @@ function ReportPage() {
 
             if (res.ok) {
                 setError('');
-                alert('Отправлено в Google Sheets');
+                finishLoading(spinnerId, FinishType.SUCCESS, "Успешно загружено в Гугл таблицы")
             } else {
-                handleBusinessError(res)
+                await handleBusinessError(res, spinnerId)
             }
         } catch (err) {
-            handleBusinessError(err)
+            await handleBusinessError(err, spinnerId)
         } finally {
             setIsLoading(false);
         }
@@ -174,6 +184,7 @@ function ReportPage() {
 
                 <div className="bg-white shadow rounded-lg p-6 mb-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Форма остается без изменений */}
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <div>
                                 <label htmlFor="contestId" className="block text-sm font-medium text-gray-700">
@@ -233,7 +244,6 @@ function ReportPage() {
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
-
                             <div className="flex items-center">
                                 <input
                                     id="plag"
@@ -295,10 +305,14 @@ function ReportPage() {
 
                 {error && (
                     <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                        {/* ... отображение ошибок ... */}
                         <div className="flex">
                             <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd"
+                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                          clipRule="evenodd"/>
                                 </svg>
                             </div>
                             <div className="ml-3">
@@ -308,17 +322,26 @@ function ReportPage() {
                     </div>
                 )}
 
-                {output && (
+                {/* Рендерим компонент DataTable, если есть данные */}
+                {gradesData && (
+                    <div className="bg-white shadow rounded-lg p-6 mb-6">
+                        <h2 className="text-lg font-medium text-gray-900 mb-4">Результаты</h2>
+                        <DataTable data={gradesData}/>
+                    </div>
+                )}
+
+                {/*{output && (
                     <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Результаты</h2>
                         <pre className="whitespace-pre-wrap bg-gray-50 p-4 rounded overflow-x-auto text-sm">
                             {output}
                         </pre>
                     </div>
-                )}
+                )}*/}
 
                 {tableId && (
                     <div className="bg-white shadow rounded-lg p-6">
+                        {/* ... остальные элементы, кнопки для скачивания и т.д. ... */}
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Дополнительные действия</h2>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -342,6 +365,7 @@ function ReportPage() {
                         <div className="mt-6">
                             <h3 className="text-md font-medium text-gray-900 mb-2">Отправить в Google Sheets</h3>
                             <form onSubmit={sendToSheets} className="space-y-4">
+                                {/* ... форма для отправки в Google Sheets ... */}
                                 <div>
                                     <label htmlFor="creds" className="block text-sm font-medium text-gray-700">
                                         Google JSON креды
