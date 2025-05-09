@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {authFetch} from '../utils/authFetch';
-import {getErrorMessage} from "../utils/errors.js";
+import {handleBusinessError} from "../utils/errors.js";
 
 function LoginPage() {
     const [isRegistering, setIsRegistering] = useState(false);
@@ -35,13 +35,10 @@ function LoginPage() {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 navigate('/report');
             } else {
-                const json = await res.json();
-                setError(getErrorMessage(json));
+                await handleBusinessError(res)
             }
         } catch (err) {
-            console.log(err);
-            const json = await err.json();
-            setError(getErrorMessage(json));
+            await handleBusinessError(err)
         }
     }
 

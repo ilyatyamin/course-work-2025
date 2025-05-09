@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authFetch } from "../utils/authFetch";
-import {getErrorMessage} from "../utils/errors.js";
+import {handleBusinessError} from "../utils/errors.js";
+import {formatDateForBackend} from "../utils/datetimeTools.js";
 
 function ReportPage() {
     const [formData, setFormData] = useState({
@@ -28,32 +29,17 @@ function ReportPage() {
         }));
     };
 
-    const formatDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return `${date.getFullYear()}-${(date.getMonth() + 1)
-            .toString()
-            .padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(
-            date.getHours()
-        ).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(
-            date.getSeconds()
-        ).padStart(2, '0')}`;
-    };
-
-    const logout = () => {
-        localStorage.clear();
-        navigate('/login');
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
+        const deadlineValue = formData.deadline === '' ? null : formatDateForBackend(formData.deadline);
         try {
             const payload = {
                 contestId: formData.contestId,
-                participantsList: formData.participantsList.split(',').map((p) => p.trim()),
-                deadline: formatDate(formData.deadline),
+                participantsList: formData.participantsList.split('\n').map((p) => p.trim()),
+                deadline: deadlineValue,
                 yandexKey: formData.yandexKey
             };
 
@@ -70,12 +56,10 @@ function ReportPage() {
                 setOutput(JSON.stringify(data.results, null, 2));
                 setTableId(data.tableId);
             } else {
-                const json = await res.json();
-                setError(getErrorMessage(json));
+                handleBusinessError(res)
             }
         } catch (err) {
-            const json = await err.json();
-            setError(getErrorMessage(json));
+            handleBusinessError(err)
         } finally {
             setIsLoading(false);
         }
@@ -86,10 +70,11 @@ function ReportPage() {
         setError('');
 
         try {
+            const deadlineValue = formData.deadline === '' ? null : formatDateForBackend(formData.deadline);
             const payload = {
                 contestId: formData.contestId,
-                participants: formData.participantsList.split(',').map((p) => p.trim()),
-                deadline: formatDate(formData.deadline),
+                participants: formData.participantsList.split('\n').map((p) => p.trim()),
+                deadline: deadlineValue,
                 yandexKey: formData.yandexKey,
                 isPlagiatCheckNeeded: formData.plag,
                 mossKey: formData.mossKey,
@@ -112,12 +97,10 @@ function ReportPage() {
                 a.download = `report.${formData.format.toLowerCase()}`;
                 a.click();
             } else {
-                const json = await res.json();
-                setError(getErrorMessage(json));
+                handleBusinessError(res)
             }
         } catch (err) {
-            const json = await err.json();
-            setError(getErrorMessage(json));
+            handleBusinessError(err)
         } finally {
             setIsLoading(false);
         }
@@ -141,12 +124,10 @@ function ReportPage() {
                 a.download = 'report.xlsx';
                 a.click();
             } else {
-                const json = await res.json();
-                setError(getErrorMessage(json));
+                handleBusinessError(res)
             }
         } catch (err) {
-            const json = await err.json();
-            setError(getErrorMessage(json));
+            handleBusinessError(err)
         } finally {
             setIsLoading(false);
         }
@@ -172,15 +153,13 @@ function ReportPage() {
             });
 
             if (res.ok) {
-                setError(''); // Clear any previous errors
+                setError('');
                 alert('Отправлено в Google Sheets');
             } else {
-                const json = await res.json();
-                setError(getErrorMessage(json));
+                handleBusinessError(res)
             }
         } catch (err) {
-            const json = await err.json();
-            setError(getErrorMessage(json));
+            handleBusinessError(err)
         } finally {
             setIsLoading(false);
         }
@@ -191,12 +170,6 @@ function ReportPage() {
             <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-gray-900">Генерация отчета</h1>
-                    <button
-                        onClick={logout}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                        Выйти
-                    </button>
                 </div>
 
                 <div className="bg-white shadow rounded-lg p-6 mb-6">
@@ -219,12 +192,12 @@ function ReportPage() {
 
                             <div>
                                 <label htmlFor="participantsList" className="block text-sm font-medium text-gray-700">
-                                    Участники (через запятую)
+                                    Участники
                                 </label>
                                 <textarea
                                     id="participantsList"
                                     name="participantsList"
-                                    placeholder="Участники через запятую"
+                                    placeholder="Участники, каждый с новой строки"
                                     value={formData.participantsList}
                                     onChange={handleChange}
                                     required
@@ -242,7 +215,6 @@ function ReportPage() {
                                     type="datetime-local"
                                     value={formData.deadline}
                                     onChange={handleChange}
-                                    required
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
