@@ -11,6 +11,7 @@ import org.ilyatyamin.yacontesthelper.autoupdate.repository.UpdateTaskRepository
 import org.ilyatyamin.yacontesthelper.error.ExceptionMessages;
 import org.ilyatyamin.yacontesthelper.error.YaContestException;
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService;
+import org.ilyatyamin.yacontesthelper.security.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class AutoUpdateServiceImpl implements AutoUpdateService {
     private GoogleSheetsService googleSheetsService;
     private SchedulingService schedulingService;
     private UpdateTaskRepository updateTaskRepository;
+    private UserService userService;
 
     private static final AtomicLong taskIdGenerator = new AtomicLong(0);
 
@@ -35,9 +37,9 @@ public class AutoUpdateServiceImpl implements AutoUpdateService {
         Long taskId = taskIdGenerator.incrementAndGet();
         schedulingService.putTaskOnScheduling(taskId, autoUpdateRequest);
 
-        // TODO: add ownerId when registration will be completed
+        var userId = userService.getIdByUsername();
         UpdateTaskDao dao = updateTaskRepository.save(
-                new UpdateTaskDao(null, null, taskId,
+                new UpdateTaskDao(null, userId, taskId,
                         autoUpdateRequest.getCronExpression(),
                         autoUpdateRequest.getSpreadsheetUrl(),
                         autoUpdateRequest.getCredentialsGoogle(),
