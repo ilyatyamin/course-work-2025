@@ -23,7 +23,9 @@ class MarkdownFormatter private constructor() {
     }
 
     fun addCode(code: String?): MarkdownFormatter = apply {
-        sb.append("\n").append(code).append("\n")
+        sb.append("```\n")
+            .append(code)
+            .append("\n```\n")
     }
 
     fun <K, V, L> addTable(table: Map<K, Map<V, L>?>): MarkdownFormatter = apply {
