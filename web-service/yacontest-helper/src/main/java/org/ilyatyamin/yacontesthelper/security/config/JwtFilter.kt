@@ -36,36 +36,41 @@ class JwtFilter(
         logger.info("[AUTH] Got request ${request.method} ${request.requestURI}...")
 
         val authHeader = request.getHeader(AUTHORIZATION_HEADER)
-        if (authHeader == null) {
-            logger.info("[AUTH] User do not send auth header")
+        if (authHeader == null || authHeader.length <= BEGIN_BEARER_INDEX) {
+            logger.info("[AUTH] User do not send auth header or it is too short, ignoring...")
             filterChain.doFilter(request, response)
             return
         }
 
+        logger.info("1")
         val token = authHeader.substring(BEGIN_BEARER_INDEX)
 
-        try {
-            jwtTokenService.checkThatTokenExistsAndNotExpired(token, TokenType.AUTH)
-            val username = jwtTokenService.extractUsername(token)
+        logger.info("2")
+        jwtTokenService.checkThatTokenExistsAndNotExpired(token, TokenType.AUTH)
+        logger.info("3")
+        val username = jwtTokenService.extractUsername(token)
+        logger.info("4")
 
-            if (username.isNotEmpty() && SecurityContextHolder.getContext().authentication == null) {
-                val userDetails = userService.userDetailsService().loadUserByUsername(username)
+        if (username.isNotEmpty() && SecurityContextHolder.getContext().authentication == null) {
+            logger.info("5")
+            val userDetails = userService.userDetailsService().loadUserByUsername(username)
 
-                val context = SecurityContextHolder.createEmptyContext()
-                val authToken = UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    "",
-                    userDetails.authorities
-                )
+            logger.info("6")
+            val context = SecurityContextHolder.createEmptyContext()
+            val authToken = UsernamePasswordAuthenticationToken(
+                userDetails,
+                "",
+                userDetails.authorities
+            )
+            logger.info("7")
 
-                authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                context.authentication = authToken
-                SecurityContextHolder.setContext(context)
-            }
-
-            filterChain.doFilter(request, response)
-        } catch (ex: Exception) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token")
+            authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+            context.authentication = authToken
+            SecurityContextHolder.setContext(context)
+            logger.info("8")
         }
+
+        logger.info("9")
+        filterChain.doFilter(request, response)
     }
 }

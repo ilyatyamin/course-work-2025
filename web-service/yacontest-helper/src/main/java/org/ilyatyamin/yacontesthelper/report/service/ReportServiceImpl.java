@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -73,7 +75,7 @@ public class ReportServiceImpl implements ReportService {
 
         MarkdownFormatter format = MarkdownFormatter.create()
                 .addHeader("Отчет по посылкам", HeaderLevel.FIRST)
-                .addHeader(String.format("Сформирован %s для контеста с id #%s", formatter.format(LocalDateTime.now()), request.getContestId()), HeaderLevel.SECOND)
+                .addHeader(String.format("Сформирован %s для контеста с id #%s", formatter.format(ZonedDateTime.now(ZoneId.systemDefault())), request.getContestId()), HeaderLevel.SECOND)
                 .addText(String.format("Крайний срок сдачи: %s", request.getDeadline()))
                 .addHeader("Результаты", HeaderLevel.THIRD)
                 .addTable(totalGrades)
