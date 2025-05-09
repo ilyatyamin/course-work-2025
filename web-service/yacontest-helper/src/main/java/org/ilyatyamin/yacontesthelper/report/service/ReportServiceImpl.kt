@@ -1,132 +1,151 @@
-package org.ilyatyamin.yacontesthelper.report.service;
+package org.ilyatyamin.yacontesthelper.report.service
 
-import com.vladsch.flexmark.ext.tables.TablesExtension;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.ast.Node;
-import com.vladsch.flexmark.util.data.MutableDataSet;
-import com.itextpdf.html2pdf.HtmlConverter;
-import lombok.AllArgsConstructor;
-import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
-import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode;
-import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient;
-import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService;
-import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService;
-import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest;
-import org.ilyatyamin.yacontesthelper.utils.HeaderLevel;
-import org.ilyatyamin.yacontesthelper.utils.MarkdownFormatter;
-import org.ilyatyamin.yacontesthelper.utils.UtilsService;
-import org.springframework.stereotype.Service;
+import com.itextpdf.html2pdf.HtmlConverter
+import com.vladsch.flexmark.ext.tables.TablesExtension
+import com.vladsch.flexmark.html.HtmlRenderer
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.ast.Node
+import com.vladsch.flexmark.util.data.MutableDataSet
+import com.vladsch.flexmark.util.misc.Extension
+import kotlinx.coroutines.*
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode
+import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient
+import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService
+import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService
+import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest
+import org.ilyatyamin.yacontesthelper.report.dto.SaveFormat
+import org.ilyatyamin.yacontesthelper.utils.HeaderLevel
+import org.ilyatyamin.yacontesthelper.utils.MarkdownFormatter
+import org.ilyatyamin.yacontesthelper.utils.UtilsService
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import java.io.ByteArrayOutputStream
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
-import java.io.ByteArrayOutputStream;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-@AllArgsConstructor
 @Service
-public class ReportServiceImpl implements ReportService {
-    private YaContestService yaContestService;
-    private ContestFeignClient contestFeignClient;
-    private SubmissionProcessorService submissionProcessorService;
-    private UtilsService utilsService;
+class ReportServiceImpl(
+    private val yaContestService: YaContestService,
+    private val contestFeignClient: ContestFeignClient,
+    private val submissionProcessorService: SubmissionProcessorService,
+    private val utilsService: UtilsService
+) : ReportService {
+    companion object {
+        private val log = LoggerFactory.getLogger(ReportServiceImpl::class.java)
 
-    @Override
-    public byte[] createReport(ReportRequest request) {
-        List<ContestSubmission> response = yaContestService.getSubmissionList(
-                request.getContestId(),
-                request.getYandexKey()
-        );
-        String authHeader = String.format("OAuth %s", request.getYandexKey());
-
-        List<ContestSubmissionWithCode> codeSubmissions = fillSubmissionByCode(response, request.getContestId(), authHeader);
-
-        Map<String, Map<String, Double>> grades = submissionProcessorService.processSubmissionList(
-                response,
-                yaContestService.getListOfProblems(request.getContestId(), request.getYandexKey()),
-                request.getParticipants(),
-                utilsService.processLocalDateTime(request.getDeadline())
-        );
-        Map<String, Double> submissionStatsOk = submissionProcessorService.getOkPercentageForTasks(grades);
-        String markdownFormat = getMarkdownReport(request, grades, submissionStatsOk, codeSubmissions);
-
-        switch (request.getSaveFormat()) {
-            case MD -> {
-                return markdownFormat.getBytes();
-            }
-            case PDF -> {
-                return getPDFReport(markdownFormat);
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + request.getSaveFormat());
+        private val options = MutableDataSet().apply {
+            set(Parser.EXTENSIONS, listOf<Extension>(TablesExtension.create()))
         }
     }
 
-    @Override
-    public String getMarkdownReport(ReportRequest request,
-                                    Map<String, Map<String, Double>> totalGrades,
-                                    Map<String, Double> submissionStatsOk,
-                                    List<ContestSubmissionWithCode> codeSubmissions) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG);
+    override fun createReport(request: ReportRequest): ByteArray {
+        val response = yaContestService.getSubmissionList(
+            contestId = request.contestId,
+            yandexAuthKey = request.yandexKey
+        )
+        val authHeader = "OAuth ${request.yandexKey}"
 
-        MarkdownFormatter format = MarkdownFormatter.create()
-                .addHeader("Отчет по посылкам", HeaderLevel.FIRST)
-                .addHeader(String.format("Сформирован %s для контеста с id #%s", formatter.format(ZonedDateTime.now(ZoneId.systemDefault())), request.getContestId()), HeaderLevel.SECOND)
-                .addText(String.format("Крайний срок сдачи: %s", request.getDeadline()))
-                .addHeader("Результаты", HeaderLevel.THIRD)
-                .addTable(totalGrades)
-                .addHeader("Статистика по вердиктам (количество посылок со статусом ОК среди всех посылок данной задачи)", HeaderLevel.THIRD)
-                .addOneDimTable(submissionStatsOk)
-                .addHeader("Исходные коды посылок со статусом OK: ", HeaderLevel.SECOND);
+        val codeSubmissions: List<ContestSubmissionWithCode> = runBlocking {
+            fillSubmissionByCode(response, request.contestId, authHeader)
+        }
+
+        val grades = submissionProcessorService.processSubmissionList(
+            response,
+            yaContestService.getListOfProblems(request.contestId, request.yandexKey),
+            request.participants,
+            utilsService.processLocalDateTime(request.deadline)
+        )
+
+        val submissionStatsOk = submissionProcessorService.getOkPercentageForTasks(grades)
+        val markdownFormat = getMarkdownReport(request, grades, submissionStatsOk, codeSubmissions)!!
+
+        return when (request.saveFormat) {
+            SaveFormat.MD -> {
+                markdownFormat.toByteArray()
+            }
+
+            SaveFormat.PDF -> {
+                getPDFReport(markdownFormat)
+            }
+        }
+    }
+
+    override fun getMarkdownReport(
+        request: ReportRequest,
+        totalGrades: Map<String, Map<String, Double>?>,
+        submissionStatsOk: Map<String, Double>,
+        codeSubmissions: List<ContestSubmissionWithCode>
+    ): String? {
+        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)
+        val nowDt = formatter.format(ZonedDateTime.now(ZoneId.systemDefault()))
+
+        val format = MarkdownFormatter.create()
+            .addHeader("Отчет по посылкам", HeaderLevel.FIRST)
+            .addHeader(
+                "Сформирован $nowDt для контеста с id #${request.contestId}", HeaderLevel.SECOND
+            )
+            .addText("Крайний срок сдачи: ${request.deadline}")
+            .addHeader("Результаты", HeaderLevel.THIRD)
+            .addTable(totalGrades)
+            .addHeader(
+                "Статистика по вердиктам (количество посылок со статусом ОК среди всех посылок данной задачи)",
+                HeaderLevel.THIRD
+            )
+            .addOneDimTable(submissionStatsOk)
+            .addHeader("Исходные коды посылок со статусом OK: ", HeaderLevel.SECOND)
 
         // TODO: планировались графики. Как их встроить?
-        for (ContestSubmissionWithCode subm : codeSubmissions) {
-            if (subm.getSubmission().getVerdict().equals("OK")) {
-                format.addText(String.format("id=%s. Автор=%s. Задача #%s. Вердикт #%s",
-                        subm.getSubmission().getId(),
-                        subm.getSubmission().getAuthor(),
-                        subm.getSubmission().getProblemAlias(),
-                        subm.getSubmission().getVerdict()));
-                format.addCode(subm.getCode());
+        for ((submission, code) in codeSubmissions) {
+            if (submission.verdict == "OK") {
+                format.addText("id=${submission.id}. Автор=${submission.author}. Задача #${submission.problemAlias}. Вердикт #${submission.verdict}")
+                format.addCode(code)
             }
         }
 
         // TODO: планировалась проверка на плагиат. Как встроить?
-
-        return format.get();
+        return format.get()
     }
 
 
-    private List<ContestSubmissionWithCode> fillSubmissionByCode(List<ContestSubmission> submissions, String contestId, String authHeader) {
-        Function<ContestSubmission, ContestSubmissionWithCode> transfromFunction = subm -> {
-            if (subm.getVerdict().equals("OK")) {
-                return new ContestSubmissionWithCode(subm,
-                        contestFeignClient.getSubmissionCode(contestId, String.valueOf(subm.getId()), authHeader));
+    private suspend fun fillSubmissionByCode(
+        submissions: List<ContestSubmission?>,
+        contestId: String,
+        authHeader: String,
+        coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    ): List<ContestSubmissionWithCode> = coroutineScope.run {
+        return submissions.filterNotNull().map { submission ->
+            async {
+                ContestSubmissionWithCode(
+                    submission = submission,
+                    code = if (submission.verdict == "OK") {
+                        try {
+                            contestFeignClient.getSubmissionCode(
+                                contestId = contestId,
+                                submissionId = submission.id.toString(),
+                                authHeader = authHeader)
+                        } catch (e: Exception) {
+                            log.warn("Error getting code for submission ${submission.id}: ${e.message}")
+                            null
+                        }
+                    } else {
+                        null
+                    }
+                )
             }
-            return new ContestSubmissionWithCode(subm, null);
-        };
-
-        return submissions.stream()
-                .map(transfromFunction)
-                .toList();
+        }.awaitAll()
     }
 
-    private byte[] getPDFReport(String markdownReport) {
-        MutableDataSet options = new MutableDataSet();
-        options.set(Parser.EXTENSIONS, List.of(TablesExtension.create()));
+    private fun getPDFReport(markdownReport: String): ByteArray {
+        val parser = Parser.builder(options).build()
+        val renderer = HtmlRenderer.builder(options).build()
 
-        Parser parser = Parser.builder(options).build();
-        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+        val htmlReport: Node = parser.parse(markdownReport)
+        val baos = ByteArrayOutputStream()
 
-        Node htmlReport = parser.parse(markdownReport);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        HtmlConverter.convertToPdf(renderer.render(htmlReport), baos);
-        return baos.toByteArray();
+        HtmlConverter.convertToPdf(renderer.render(htmlReport), baos)
+        return baos.toByteArray()
     }
 }

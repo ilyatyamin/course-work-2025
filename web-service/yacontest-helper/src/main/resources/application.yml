@@ -39,3 +39,9 @@ security:
   jwt-secret: ${SECRET_KEY_JWT}
   auth-validity-period-seconds: ${AUTH_TOKEN_VALIDITY_PERIOD_SEC}
   refresh-validity-period-seconds: ${REFRESH_TOKEN_VALIDITY_PERIOD_SEC}
+
+resilience4j.rateLimiter:
+  configs:
+    submissions-yacontest:
+      timeoutDuration: 1s
+      limitForPeriod: 100

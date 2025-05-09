@@ -1,5 +1,6 @@
 package org.ilyatyamin.yacontesthelper.grades.service.feign
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter
 import org.ilyatyamin.yacontesthelper.configs.BeanConfigs
 import org.ilyatyamin.yacontesthelper.grades.dto.GetProblemsResponse
 import org.ilyatyamin.yacontesthelper.grades.dto.GetSubmissionListResponse
@@ -29,6 +30,7 @@ interface ContestFeignClient {
     ): GetSubmissionListResponse
 
     @GetMapping(value = ["/contests/{contestId}/submissions/{submissionId}/source"])
+    @RateLimiter(name = "submissions-yacontest")
     fun getSubmissionCode(
         @PathVariable contestId: String?,
         @PathVariable submissionId: String?,

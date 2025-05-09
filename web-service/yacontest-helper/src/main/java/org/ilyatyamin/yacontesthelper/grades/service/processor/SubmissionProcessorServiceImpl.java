@@ -23,10 +23,10 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
         Map<String, Map<String, Double>> resultTable = new LinkedHashMap<>();
         List<String> totalParticipants = submissionList.stream()
                 .map(ContestSubmission::getAuthor)
+                .sorted()
                 .toList();
+
         List<String> finalParticipantList = isParticipantsListEmpty(participants) ? totalParticipants : participants;
-        log.info("Total participants: {}", finalParticipantList);
-        log.info("Total participants: {}", isParticipantsListEmpty(participants));
 
         // form start table
         for (String problem : problemList) {

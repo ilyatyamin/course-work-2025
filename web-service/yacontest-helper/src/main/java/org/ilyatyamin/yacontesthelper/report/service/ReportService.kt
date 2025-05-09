@@ -1,15 +1,15 @@
-package org.ilyatyamin.yacontesthelper.report.service;
+package org.ilyatyamin.yacontesthelper.report.service
 
-import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode;
-import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode
+import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest
 
-import java.util.List;
-import java.util.Map;
+interface ReportService {
+    fun createReport(request: ReportRequest): ByteArray
 
-public interface ReportService {
-    byte[] createReport(ReportRequest request);
-    String getMarkdownReport(ReportRequest request,
-                             Map<String, Map<String, Double>> totalGrades,
-                             Map<String, Double> submissionStatsOk,
-                             List<ContestSubmissionWithCode> codeSubmissions);
+    fun getMarkdownReport(
+        request: ReportRequest,
+        totalGrades: Map<String, Map<String, Double>?>,
+        submissionStatsOk: Map<String, Double>,
+        codeSubmissions: List<ContestSubmissionWithCode>
+    ): String?
 }

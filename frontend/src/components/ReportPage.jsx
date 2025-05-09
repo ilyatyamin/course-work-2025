@@ -72,7 +72,7 @@ function ReportPage() {
         }
     };
 
-    const downloadReport = async () => {
+    const downloadReport = async (format) => {
         setIsLoading(true);
         setError('');
 
@@ -86,7 +86,7 @@ function ReportPage() {
                 yandexKey: formData.yandexKey,
                 isPlagiatCheckNeeded: formData.plag,
                 mossKey: formData.mossKey,
-                saveFormat: formData.format
+                saveFormat: format
             };
 
             const res = await authFetch('http://localhost:8080/api/report', {
@@ -102,8 +102,10 @@ function ReportPage() {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `report.${formData.format.toLowerCase()}`;
+                a.download = `report.${format.toLowerCase()}`;
                 a.click();
+
+                finishLoading(spinnerId);
             } else {
                 await handleBusinessError(res, spinnerId)
             }
@@ -132,6 +134,8 @@ function ReportPage() {
                 a.href = url;
                 a.download = 'report.xlsx';
                 a.click();
+
+                finishLoading(spinnerId);
             } else {
                 await handleBusinessError(res, spinnerId)
             }
@@ -271,22 +275,6 @@ function ReportPage() {
                                     />
                                 </div>
                             )}
-
-                            <div>
-                                <label htmlFor="format" className="block text-sm font-medium text-gray-700">
-                                    Формат отчета
-                                </label>
-                                <select
-                                    id="format"
-                                    name="format"
-                                    value={formData.format}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
-                                >
-                                    <option value="PDF">PDF</option>
-                                    <option value="MD">Markdown</option>
-                                </select>
-                            </div>
                         </div>
 
                         <div>
@@ -320,8 +308,31 @@ function ReportPage() {
                 )}
 
                 {gradesData && (
-                    <div className="bg-white shadow rounded-lg p-6 mb-6">
+                    <div className="bg-white shadow rounded-lg p-6 mb-6 grid-cols-1 gap-4 sm:grid-cols-3">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Результаты</h2>
+                        <button
+                            onClick={downloadXLSX}
+                            disabled={isLoading}
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Скачать баллы в XLSX
+                        </button>
+
+                        <button
+                            onClick={() => downloadReport('PDF')}
+                            disabled={isLoading}
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Скачать детальный отчет в PDF
+                        </button>
+
+                        <button
+                            onClick={() => downloadReport('MD')}
+                            disabled={isLoading}
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-amber-300 hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Скачать детальный отчет в Markdown
+                        </button>
                         <DataTable data={gradesData}/>
                     </div>
                 )}
@@ -329,25 +340,6 @@ function ReportPage() {
                 {tableId && (
                     <div className="bg-white shadow rounded-lg p-6">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Дополнительные действия</h2>
-
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            <button
-                                onClick={downloadXLSX}
-                                disabled={isLoading}
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Скачать XLSX
-                            </button>
-
-                            <button
-                                onClick={downloadReport}
-                                disabled={isLoading}
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Скачать отчет
-                            </button>
-                        </div>
-
                         <div className="mt-6">
                             <h3 className="text-md font-medium text-gray-900 mb-2">Отправить в Google Sheets</h3>
                             <form onSubmit={sendToSheets} className="space-y-4">
