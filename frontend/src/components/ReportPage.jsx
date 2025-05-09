@@ -184,7 +184,6 @@ function ReportPage() {
 
                 <div className="bg-white shadow rounded-lg p-6 mb-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Форма остается без изменений */}
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <div>
                                 <label htmlFor="contestId" className="block text-sm font-medium text-gray-700">
@@ -208,10 +207,9 @@ function ReportPage() {
                                 <textarea
                                     id="participantsList"
                                     name="participantsList"
-                                    placeholder="Участники, каждый с новой строки"
+                                    placeholder="Участники, каждый с новой строки. Оставьте пустым, чтобы построить отчет для всех участников соревнования"
                                     value={formData.participantsList}
                                     onChange={handleChange}
-                                    required
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
@@ -305,7 +303,6 @@ function ReportPage() {
 
                 {error && (
                     <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-                        {/* ... отображение ошибок ... */}
                         <div className="flex">
                             <div className="flex-shrink-0">
                                 <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg"
@@ -322,7 +319,6 @@ function ReportPage() {
                     </div>
                 )}
 
-                {/* Рендерим компонент DataTable, если есть данные */}
                 {gradesData && (
                     <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Результаты</h2>
@@ -330,18 +326,8 @@ function ReportPage() {
                     </div>
                 )}
 
-                {/*{output && (
-                    <div className="bg-white shadow rounded-lg p-6 mb-6">
-                        <h2 className="text-lg font-medium text-gray-900 mb-4">Результаты</h2>
-                        <pre className="whitespace-pre-wrap bg-gray-50 p-4 rounded overflow-x-auto text-sm">
-                            {output}
-                        </pre>
-                    </div>
-                )}*/}
-
                 {tableId && (
                     <div className="bg-white shadow rounded-lg p-6">
-                        {/* ... остальные элементы, кнопки для скачивания и т.д. ... */}
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Дополнительные действия</h2>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -365,7 +351,6 @@ function ReportPage() {
                         <div className="mt-6">
                             <h3 className="text-md font-medium text-gray-900 mb-2">Отправить в Google Sheets</h3>
                             <form onSubmit={sendToSheets} className="space-y-4">
-                                {/* ... форма для отправки в Google Sheets ... */}
                                 <div>
                                     <label htmlFor="creds" className="block text-sm font-medium text-gray-700">
                                         Google JSON креды

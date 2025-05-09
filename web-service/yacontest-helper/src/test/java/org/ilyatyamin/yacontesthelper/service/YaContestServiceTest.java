@@ -34,7 +34,7 @@ public class YaContestServiceTest {
                 new ContestProblem("C", "C", "program", 10),
                 new ContestProblem("A", "D", "program", 10)
         );
-        YaContestService yaContestService = new YaContestServiceImpl(contestFeignClient);
+        YaContestService yaContestService = new YaContestServiceImpl(contestFeignClient, getSubmissionListPageSize);
 
         Mockito.when(contestFeignClient.getListOfProblems(contestId, String.format("OAuth %s", authKey)))
                 .thenReturn(new GetProblemsResponse(problemList));
@@ -47,7 +47,7 @@ public class YaContestServiceTest {
     void testGetSubmissionList() {
         String contestId = "1";
         String authKey = "key";
-        YaContestService yaContestService = new YaContestServiceImpl(contestFeignClient);
+        YaContestService yaContestService = new YaContestServiceImpl(contestFeignClient, getSubmissionListPageSize);
 
         List<String> aliases = List.of("A", "B", "C");
         List<ContestSubmission> expectedSubmissionList = new ArrayList<>();

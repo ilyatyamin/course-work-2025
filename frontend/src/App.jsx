@@ -47,7 +47,6 @@ const AppRoutes = () => (
             }
         />
 
-        {/* Редирект на /report по умолчанию */}
         <Route path="*" element={<Navigate to="/report" replace/>}/>
     </Routes>
 );
@@ -67,8 +66,6 @@ function App() {
                 pauseOnHover
                 theme="light"
             />
-
-            {/* Основные маршруты */}
             <AppRoutes/>
         </Router>
     );

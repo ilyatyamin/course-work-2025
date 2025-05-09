@@ -35,7 +35,7 @@ class JwtTokenService(
     internal fun generateToken(userDetails: UserDao, tokenType: TokenType): String {
         val time = System.currentTimeMillis()
         val period = if (tokenType == TokenType.AUTH) authValidityPeriod else refreshValidityPeriod
-        val expirationDate = Date(time + period!! * 1000)
+        val expirationDate = Date(time + period * 1000)
 
         val token = Jwts.builder()
             .subject(userDetails.username)
@@ -79,14 +79,6 @@ class JwtTokenService(
                 ExceptionMessages.TOKEN_EXPIRED.message
             )
         }
-    }
-
-    internal fun isTokenExists(token: String): Boolean {
-        return tokenRepository.findByPayload(token).isPresent
-    }
-
-    internal fun isTokenRefresh(token: String): Boolean {
-        return tokenRepository.existsTokenDaoByPayloadAndTokenType(token, TokenType.REFRESH)
     }
 
     private fun updateOnConflictInsertToDb(

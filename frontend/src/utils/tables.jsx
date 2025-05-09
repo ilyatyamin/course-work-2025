@@ -5,7 +5,7 @@ function DataTable({data}) {
     const columnKeys = Object.keys(data).filter(key => key !== 'total');
 
     return (
-        <div className="overflow-x-auto"> {/* Обертка для горизонтальной прокрутки */}
+        <div className="overflow-x-auto">
             <table className="min-w-full border border-gray-300">
                 <thead className="bg-gray-50">
                 <tr>

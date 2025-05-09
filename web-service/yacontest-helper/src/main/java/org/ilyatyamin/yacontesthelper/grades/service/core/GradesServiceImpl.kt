@@ -31,11 +31,15 @@ class GradesServiceImpl(
 
     override fun getGradesList(gradesRequest: GradesRequest?): GradesResponse {
         val problemList = yaContestService.getListOfProblems(
-            gradesRequest?.contestId, gradesRequest?.yandexKey
+            contestId = gradesRequest?.contestId,
+            yandexAuthKey = gradesRequest?.yandexKey
         )
         log.info("Got problem list for request: {}", problemList)
 
-        val submissionList = yaContestService.getSubmissionList(gradesRequest?.contestId, gradesRequest?.yandexKey)
+        val submissionList = yaContestService.getSubmissionList(
+            contestId = gradesRequest?.contestId,
+            yandexAuthKey = gradesRequest?.yandexKey
+        )
         log.info("Got {} submissions for request", submissionList.size)
 
         val resultTable = submissionProcessorService.processSubmissionList(

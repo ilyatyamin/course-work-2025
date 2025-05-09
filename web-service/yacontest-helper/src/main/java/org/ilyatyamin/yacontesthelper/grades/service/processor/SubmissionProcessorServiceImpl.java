@@ -20,11 +20,18 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
     @Override
     public Map<String, Map<String, Double>> processSubmissionList(List<ContestSubmission> submissionList, List<String> problemList,
                                                                   List<String> participants, Optional<LocalDateTime> deadline) {
-        // form start table
         Map<String, Map<String, Double>> resultTable = new LinkedHashMap<>();
+        List<String> totalParticipants = submissionList.stream()
+                .map(ContestSubmission::getAuthor)
+                .toList();
+        List<String> finalParticipantList = isParticipantsListEmpty(participants) ? totalParticipants : participants;
+        log.info("Total participants: {}", finalParticipantList);
+        log.info("Total participants: {}", isParticipantsListEmpty(participants));
+
+        // form start table
         for (String problem : problemList) {
             Map<String, Double> key = new LinkedHashMap<>();
-            for (String participant : participants) {
+            for (String participant : finalParticipantList) {
                 key.put(participant, 0.0);
             }
 
@@ -33,7 +40,7 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
 
         // fill table by submissions
         for (ContestSubmission submission : submissionList) {
-            if (participants.contains(submission.getAuthor()) && (deadline.isEmpty() || !isSubmissionDelayed(submission.getSubmissionTime(), deadline.get()))) {
+            if (finalParticipantList.contains(submission.getAuthor()) && (deadline.isEmpty() || !isSubmissionDelayed(submission.getSubmissionTime(), deadline.get()))) {
                 Double previousGrade = resultTable.get(submission.getProblemAlias()).get(submission.getAuthor());
                 if (previousGrade < submission.getScore() && !submission.getVerdict().equals("OK")) {
                     resultTable.get(submission.getProblemAlias()).replace(submission.getAuthor(), submission.getScore());
@@ -45,7 +52,7 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
 
         // calculate total
         Map<String, Double> totalResults = new HashMap<>();
-        for (String participant : participants) {
+        for (String participant : finalParticipantList) {
             Double total = 0.0;
             for (String problem : problemList) {
                 total += resultTable.get(problem).get(participant);
@@ -68,7 +75,7 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
             for (Double val : percentage.values()) {
                 totalSolved += val;
             }
-            totalResults.put(problem, (totalSolved / percentage.size()) * 100);
+            totalResults.put(problem, Double.valueOf("%.2f".formatted((totalSolved / percentage.size()) * 100)));
         }
         return totalResults;
     }
@@ -99,5 +106,9 @@ public class SubmissionProcessorServiceImpl implements SubmissionProcessorServic
             log.error("Error parsing date: {}", e.getMessage());
             return false;
         }
+    }
+
+    private boolean isParticipantsListEmpty(List<String> participants) {
+        return participants == null || participants.isEmpty() || participants.stream().allMatch(String::isEmpty);
     }
 }
