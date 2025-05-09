@@ -52,7 +52,7 @@ class JwtFilter(
             val context = SecurityContextHolder.createEmptyContext()
             val authToken = UsernamePasswordAuthenticationToken(
                 userDetails,
-                "",
+                userDetails.username,
                 userDetails.authorities
             )
 

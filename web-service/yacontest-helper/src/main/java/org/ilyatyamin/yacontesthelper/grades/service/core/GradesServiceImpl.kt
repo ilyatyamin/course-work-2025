@@ -11,6 +11,7 @@ import org.ilyatyamin.yacontesthelper.grades.service.excel.ExcelFormatterService
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService
+import org.ilyatyamin.yacontesthelper.security.service.UserService
 import org.ilyatyamin.yacontesthelper.utils.UtilsService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -23,7 +24,8 @@ class GradesServiceImpl(
     private val submissionProcessorService: SubmissionProcessorService,
     private val excelFormatterService: ExcelFormatterServiceImpl,
     private val googleSheetsService: GoogleSheetsService,
-    private val utilsService: UtilsService
+    private val utilsService: UtilsService,
+    private val userService: UserService
 ) : GradesService {
     companion object {
         private val log = LoggerFactory.getLogger(GradesServiceImpl::class.java)
@@ -49,36 +51,44 @@ class GradesServiceImpl(
             utilsService.processLocalDateTime(gradesRequest?.deadline)
         )
 
-        // TODO: после регистрации допилить userId
+        val userId = userService.getIdByUsername()
         val result = gradesResultRepository.saveAndFlush(
-            GradesResult(null, resultTable)
+            GradesResult(userId, resultTable)
         )
 
         return GradesResponse(result.id, resultTable)
     }
 
     override fun generateGradesTable(tableId: Long?): ByteArray? {
-        // TODO: проверка что таблица с таким tableId доступна вообще данному пользователю
-        if (!gradesResultRepository.existsById(tableId!!)) {
-            throw YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.GRADES_TABLE_NOT_FOUND.message)
-        }
-        val result = gradesResultRepository.getReferenceById(tableId)
-
+        val result = getGradesResult(tableId)
         return excelFormatterService.generateGradesTable(result.payload)
     }
 
     override fun writeToGoogleSheets(tableId: Long?, request: GoogleSheetsRequest?) {
-        // TODO: проверка что таблица с таким tableId доступна вообще данному пользователю
-        if (!gradesResultRepository.existsById(tableId!!)) {
-            throw YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.GRADES_TABLE_NOT_FOUND.message)
-        }
-        val result = gradesResultRepository.getReferenceById(tableId)
-
+        val result = getGradesResult(tableId)
         googleSheetsService.writeToSheet(
             request?.googleServiceAccountCredentials,
             request?.spreadsheetUrl,
             request?.listName,
             result.payload
         )
+    }
+
+    private fun getGradesResult(tableId: Long?): GradesResult {
+        if (!gradesResultRepository.existsById(tableId!!)) {
+            throw YaContestException(HttpStatus.NOT_FOUND.value(), ExceptionMessages.GRADES_TABLE_NOT_FOUND.message)
+        }
+        val result = gradesResultRepository.getReferenceById(tableId)
+
+        val userId = userService.getIdByUsername()
+        if (result.userId != userId) {
+            log.warn("User #${userId} tried to get someone else table with id $tableId")
+            throw YaContestException(
+                HttpStatus.FORBIDDEN.value(),
+                ExceptionMessages.TABLE_ACCESS_FORBIDDEN.message
+            )
+        }
+
+        return result
     }
 }
