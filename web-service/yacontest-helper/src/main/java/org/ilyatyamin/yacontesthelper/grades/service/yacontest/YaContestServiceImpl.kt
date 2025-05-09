@@ -1,61 +1,47 @@
-package org.ilyatyamin.yacontesthelper.grades.service.yacontest;
+package org.ilyatyamin.yacontesthelper.grades.service.yacontest
 
-import lombok.extern.slf4j.Slf4j;
-import org.ilyatyamin.yacontesthelper.grades.dto.ContestProblem;
-import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
-import org.ilyatyamin.yacontesthelper.grades.dto.GetProblemsResponse;
-import org.ilyatyamin.yacontesthelper.grades.dto.GetSubmissionListResponse;
-import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission
+import org.ilyatyamin.yacontesthelper.grades.dto.GetProblemsResponse
+import org.ilyatyamin.yacontesthelper.grades.dto.GetSubmissionListResponse
+import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 
 @Service
-@Slf4j
-public class YaContestServiceImpl implements YaContestService {
-    private final ContestFeignClient contestFeignClient;
+class YaContestServiceImpl(
+    private val contestFeignClient: ContestFeignClient,
+    @Value("\${configs.get-submission-list.page-size}") private val getSubmissionListPageSize: Int
+) : YaContestService {
+    override fun getListOfProblems(contestId: String?, yandexAuthKey: String?): List<String?> {
+        val authHeader = "OAuth $yandexAuthKey"
+        val contestResponse = contestFeignClient.getListOfProblems(contestId, authHeader)
 
-    @Value("${configs.get-submission-list.page-size}")
-    private int getSubmissionListPageSize;
-
-    public YaContestServiceImpl(ContestFeignClient contestFeignClient) {
-        this.contestFeignClient = contestFeignClient;
+        return selectProblemListFromResponse(contestResponse)
     }
 
-    @Override
-    public List<String> getListOfProblems(String contestId, String yandexAuthKey) {
-        String authHeader = String.format("OAuth %s", yandexAuthKey);
-
-        GetProblemsResponse contestResponse = contestFeignClient.getListOfProblems(contestId, authHeader);
-        return selectProblemListFromResponse(contestResponse);
-    }
-
-    @Override
-    public List<ContestSubmission> getSubmissionList(String contestId, String yandexAuthKey) {
-        String authHeader = String.format("OAuth %s", yandexAuthKey);
-
-        List<ContestSubmission> totalSubmissions = new ArrayList<>();
-        GetSubmissionListResponse contestResponse;
-        int page = 1;
+    override fun getSubmissionList(contestId: String?, yandexAuthKey: String?): List<ContestSubmission?> {
+        val authHeader = "OAuth $yandexAuthKey"
+        val totalSubmissions = mutableListOf<ContestSubmission>()
+        var contestResponse: GetSubmissionListResponse
+        var page = 1
 
         do {
-            contestResponse = contestFeignClient.getListOfSubmissionsByPage(contestId, authHeader, page, getSubmissionListPageSize);
+            contestResponse = contestFeignClient.getListOfSubmissionsByPage(
+                contestId = contestId,
+                authHeader = authHeader,
+                pageId = page,
+                pageSize = getSubmissionListPageSize
+            )
 
-            totalSubmissions.addAll(contestResponse.getSubmissions());
+            totalSubmissions.addAll(contestResponse.submissions)
+            page += 1
+        } while (contestResponse.submissions.isNotEmpty())
 
-            page += 1;
-        } while (!contestResponse.getSubmissions().isEmpty());
-
-        return totalSubmissions;
+        return totalSubmissions
     }
 
-    private List<String> selectProblemListFromResponse(GetProblemsResponse response) {
-        return response.getProblems()
-                .stream()
-                .map(ContestProblem::getAlias)
-                .sorted()
-                .toList();
+    private fun selectProblemListFromResponse(response: GetProblemsResponse?): List<String?> {
+        return (response?.problems ?: listOf())
+            .map { it.alias }.sorted().toList()
     }
 }
