@@ -55,7 +55,6 @@ const AppRoutes = () => (
 function App() {
     return (
         <Router>
-            {/* Контейнер для уведомлений */}
             <ToastContainer
                 position="top-right"
                 autoClose={4000}

@@ -1,4 +1,5 @@
 import {toast} from "react-toastify";
+import {alertMessage} from "./errors.js";
 
 const AUTH_TOKEN_KEY = 'authToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -26,23 +27,28 @@ export async function authFetch(input, init = {}) {
     const bodyLength = parseInt(contentLength, 10);
 
     if (response.status === 401) {
+        console.info("Got Unauthorized status for the request...");
         try {
             const responseBody = await response.clone().json();
             if (responseBody?.message === TOKEN_EXPIRED_MESSAGE) {
+                console.info("Token expired, tried to refresh...");
                 const newResponse = await attemptTokenRefresh(input, init);
                 if (newResponse) {
                     return newResponse;
                 }
+            } else {
+                console.info(`Got unknown message ${responseBody?.message}`);
             }
         } catch (error) {
             console.error("Error parsing response body or refreshing token:", error);
         }
         if (!isAuthRequest) {
+            console.info(`Clear data and redirect user to login page`);
             clearAuthDataAndRedirectToLogin();
         }
     } else if (response.status === 403 && bodyLength === 0) {
-        toast.error("Вы не авторизованы :(")
         clearAuthDataAndRedirectToLogin();
+        alertMessage("Вы не авторизованы. Авторизуйтесь заново");
     }
     return response;
 }
