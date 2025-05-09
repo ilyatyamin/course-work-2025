@@ -1,17 +1,15 @@
-package org.ilyatyamin.yacontesthelper;
+package org.ilyatyamin.yacontesthelper
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.scheduling.annotation.EnableScheduling;
-//import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.cloud.openfeign.EnableFeignClients
+import org.springframework.scheduling.annotation.EnableScheduling
 
-@SpringBootApplication()
+@SpringBootApplication
 @EnableFeignClients
 @EnableScheduling
-//@EnableSwagger2
-public class YaContestHelperApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(YaContestHelperApplication.class, args);
-    }
+open class YaContestHelperApplication
+
+fun main(args: Array<String>) {
+    SpringApplication.run(YaContestHelperApplication::class.java, *args)
 }
