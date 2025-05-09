@@ -1,11 +1,8 @@
-package org.ilyatyamin.yacontesthelper.grades.dto;
+package org.ilyatyamin.yacontesthelper.grades.dto
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-public record GradesRequest(
-        String contestId,
-        List<String> participantsList,
-        @Nullable String deadline,
-        String yandexKey
-) {}
+data class GradesRequest(
+    val contestId: String,
+    val participantsList: List<String>,
+    val deadline: String?,
+    val yandexKey: String
+)

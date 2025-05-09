@@ -1,33 +1,30 @@
-package org.ilyatyamin.yacontesthelper.report.controller;
+package org.ilyatyamin.yacontesthelper.report.controller
 
-import lombok.AllArgsConstructor;
-import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest;
-import org.ilyatyamin.yacontesthelper.report.service.ReportService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest
+import org.ilyatyamin.yacontesthelper.report.service.ReportService
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
-@AllArgsConstructor
-public class ReportController {
-    private final ReportService reportService;
-
+class ReportController(private val reportService: ReportService) {
     @PostMapping("api/report")
-    ResponseEntity<byte[]> getGradesReport(@RequestBody ReportRequest request) {
-        byte[] data = reportService.createReport(request);
+    fun getGradesReport(@RequestBody request: ReportRequest): ResponseEntity<ByteArray> {
+        val data = reportService.createReport(request)
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        String fileName = String.format("report.%s", request.getSaveFormat().name().toLowerCase());
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_OCTET_STREAM
+        val fileName = String.format("report.%s", request.saveFormat.name.lowercase(Locale.getDefault()))
 
-        headers.setContentDispositionFormData("attachment", fileName);
+        headers.setContentDispositionFormData("attachment", fileName)
 
         return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(data);
+            .ok()
+            .headers(headers)
+            .body(data)
     }
 }
