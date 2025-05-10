@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { authFetch } from "../utils/authFetch";
+import { authFetch } from "../../utils/authFetch.js";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import DataTable from "../utils/tables.jsx";
+import DataTable from "../../utils/tables.jsx";
 
 const Home = () => {
     const [user, setUser] = useState({ firstName: "", lastName: "" });

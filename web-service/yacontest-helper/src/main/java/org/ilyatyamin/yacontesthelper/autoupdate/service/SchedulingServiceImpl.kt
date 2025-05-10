@@ -4,6 +4,7 @@ import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest
 import org.ilyatyamin.yacontesthelper.autoupdate.task.AutoUpdateTask
 import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
+import org.ilyatyamin.yacontesthelper.utils.service.secure.EncryptorService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.Trigger
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -15,7 +16,8 @@ import java.util.concurrent.ScheduledFuture
 class SchedulingServiceImpl(
     private val updateGoogleSheetsScheduler: ThreadPoolTaskScheduler,
     private val googleSheetsService: GoogleSheetsService,
-    private val gradesService: GradesService
+    private val gradesService: GradesService,
+    private val encryptorService: EncryptorService
 ) : SchedulingService {
     private val scheduledTasks: MutableMap<Long?, ScheduledFuture<*>?> = mutableMapOf()
 
@@ -24,7 +26,7 @@ class SchedulingServiceImpl(
     }
 
     override fun putTaskOnScheduling(taskId: Long?, request: AutoUpdateRequest) {
-        val task = AutoUpdateTask(googleSheetsService, gradesService, taskId, request)
+        val task = AutoUpdateTask(googleSheetsService, gradesService, encryptorService, taskId, request)
         val trigger: Trigger = CronTrigger(request.cronExpression)
         try {
             val future = updateGoogleSheetsScheduler.schedule(task, trigger)

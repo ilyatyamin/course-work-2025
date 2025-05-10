@@ -4,14 +4,14 @@ import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import LoginPage from './components/LoginPage';
-import ReportPage from './components/ReportPage';
-import AutoUpdatePage from './components/AutoUpdate';
+import LoginPage from './components/pages/LoginPage.jsx';
+import ReportPage from './components/pages/ReportPage.jsx';
+import AutoUpdatePage from './components/pages/AutoUpdate.jsx';
 import ProtectedRoute from './routes/ProtectedRoute';
-import Navbar from './components/Navbar';
+import Navbar from './components/providers/Navbar.jsx';
 import './App.css';
-import RegisterPage from "./components/RegisterPage.jsx";
-import MainPage from "./components/Main.jsx";
+import RegisterPage from "./components/pages/RegisterPage.jsx";
+import MainPage from "./components/pages/Main.jsx";
 
 const LayoutWithNavbar = ({children}) => (
     <div>

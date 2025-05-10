@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {authFetch} from "../utils/authFetch";
-import {handleBusinessError} from "../utils/errors.js";
-import {formatDateForBackend} from "../utils/datetimeTools.js";
-import {finishLoading, FinishType, Jobs, startLoading} from "../utils/loadingProcess.js";
-import DataTable from '../utils/tables.jsx'
+import {authFetch} from "../../utils/authFetch.js";
+import {handleBusinessError} from "../../utils/errors.js";
+import {formatDateForBackend} from "../../utils/datetimeTools.js";
+import {finishLoading, FinishType, Jobs, startLoading} from "../../utils/loadingProcess.js";
+import DataTable from '../../utils/tables.jsx'
+import SaveKeyModal from "../keys/SaveKeyModal.jsx";
+
 
 function ReportPage() {
     const [formData, setFormData] = useState({
@@ -23,6 +25,29 @@ function ReportPage() {
     const [error, setError] = useState('');
     const [gradesData, setGradesData] = useState(null);
     const navigate = useNavigate();
+
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [keyToSave, setKeyToSave] = useState('');
+    const [savedKeys, setSavedKeys] = useState([]);
+
+    useEffect(() => {
+        const username = localStorage.getItem("username");
+
+        async function loadKeys() {
+            const res = await authFetch("http://localhost:8080/api/user/secretKey", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, type: "YANDEX_CONTEST"}),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setSavedKeys(data.keys || []);
+            }
+        }
+
+        loadKeys();
+    }, []);
+
 
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
@@ -62,6 +87,11 @@ function ReportPage() {
                 finishLoading(spinnerId)
                 setTableId(data.tableId);
                 setGradesData(data.results);
+
+                if (shouldShowSaveModal(formData.yandexKey)) {
+                    setKeyToSave(formData.yandexKey);
+                    setShowSaveModal(true);
+                }
             } else {
                 await handleBusinessError(res, spinnerId)
             }
@@ -179,6 +209,11 @@ function ReportPage() {
         }
     };
 
+    const shouldShowSaveModal = (key) => {
+        return !savedKeys.some(k => k.key === key);
+    };
+
+
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -188,94 +223,116 @@ function ReportPage() {
 
                 <div className="bg-white shadow rounded-lg p-6 mb-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <label htmlFor="contestId" className="block text-sm font-medium text-gray-700">
-                                    Contest ID
-                                </label>
-                                <input
-                                    id="contestId"
-                                    name="contestId"
-                                    placeholder="Contest ID"
-                                    value={formData.contestId}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
-                                />
-                            </div>
 
-                            <div>
-                                <label htmlFor="participantsList" className="block text-sm font-medium text-gray-700">
-                                    Участники
-                                </label>
-                                <textarea
-                                    id="participantsList"
-                                    name="participantsList"
-                                    placeholder="Участники, каждый с новой строки. Оставьте пустым, чтобы построить отчет для всех участников соревнования"
-                                    value={formData.participantsList}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
-                                />
-                            </div>
+                        <div>
+                            <label htmlFor="contestId" className="block text-sm font-medium text-gray-700">
+                                Contest ID
+                            </label>
+                            <input
+                                id="contestId"
+                                name="contestId"
+                                placeholder="Contest ID"
+                                value={formData.contestId}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
+                            />
+                        </div>
 
-                            <div>
-                                <label htmlFor="deadline" className="block text-sm font-medium text-gray-700">
-                                    Дедлайн
-                                </label>
-                                <input
-                                    id="deadline"
-                                    name="deadline"
-                                    type="datetime-local"
-                                    value={formData.deadline}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
-                                />
-                            </div>
+                        <div>
+                            <label htmlFor="participantsList" className="block text-sm font-medium text-gray-700">
+                                Участники
+                            </label>
+                            <textarea
+                                id="participantsList"
+                                name="participantsList"
+                                placeholder="Участники, каждый с новой строки. Оставьте пустым, чтобы построить отчет для всех участников соревнования"
+                                value={formData.participantsList}
+                                onChange={handleChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
+                            />
+                        </div>
 
-                            <div>
-                                <label htmlFor="yandexKey" className="block text-sm font-medium text-gray-700">
-                                    Yandex API key
-                                </label>
+                        <div>
+                            <label htmlFor="deadline" className="block text-sm font-medium text-gray-700">
+                                Дедлайн
+                            </label>
+                            <input
+                                id="deadline"
+                                name="deadline"
+                                type="datetime-local"
+                                value={formData.deadline}
+                                onChange={handleChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="yandexKey" className="block text-sm font-medium text-gray-700">
+                                Яндекс ключ
+                            </label>
+                            <div className="flex items-center gap-2">
                                 <input
                                     id="yandexKey"
                                     name="yandexKey"
-                                    placeholder="Yandex API key"
+                                    type="text"
                                     value={formData.yandexKey}
                                     onChange={handleChange}
+                                    placeholder="Введите ключ или выберите"
+                                    className="flex-grow p-2 border rounded w-full"
                                     required
+                                />
+                                <select
+                                    className="p-2 border rounded text-sm bg-gray-100"
+                                    onChange={(e) => {
+                                        const selectedId = parseInt(e.target.value);
+                                        const selected = savedKeys.find(k => k.id === selectedId);
+                                        if (selected) {
+                                            setFormData((prev) => ({...prev, yandexKey: selected.key}));
+                                        }
+                                    }}
+                                    defaultValue=""
+                                    title="Выбрать сохранённый ключ"
+                                >
+                                    <option value="" disabled>🔑</option>
+                                    {savedKeys.map((key) => (
+                                        <option key={key.id} value={key.id}>
+                                            {key.description}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <input
+                                id="plag"
+                                name="plag"
+                                type="checkbox"
+                                checked={formData.plag}
+                                onChange={handleChange}
+                                className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor="plag" className="ml-2 block text-sm text-gray-700">
+                                Проверка на плагиат
+                            </label>
+                        </div>
+
+                        {formData.plag && (
+                            <div>
+                                <label htmlFor="mossKey" className="block text-sm font-medium text-gray-700">
+                                    MOSS key
+                                </label>
+                                <input
+                                    id="mossKey"
+                                    name="mossKey"
+                                    placeholder="MOSS key (если надо)"
+                                    value={formData.mossKey}
+                                    onChange={handleChange}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
-                            <div className="flex items-center">
-                                <input
-                                    id="plag"
-                                    name="plag"
-                                    type="checkbox"
-                                    checked={formData.plag}
-                                    onChange={handleChange}
-                                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="plag" className="ml-2 block text-sm text-gray-700">
-                                    Проверка на плагиат
-                                </label>
-                            </div>
-
-                            {formData.plag && (
-                                <div>
-                                    <label htmlFor="mossKey" className="block text-sm font-medium text-gray-700">
-                                        MOSS key
-                                    </label>
-                                    <input
-                                        id="mossKey"
-                                        name="mossKey"
-                                        placeholder="MOSS key (если надо)"
-                                        value={formData.mossKey}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        )}
 
                         <div>
                             <button
@@ -287,6 +344,13 @@ function ReportPage() {
                             </button>
                         </div>
                     </form>
+
+                    <SaveKeyModal
+                        isOpen={showSaveModal}
+                        onClose={() => setShowSaveModal(false)}
+                        keyValue={keyToSave}
+                        type="YANDEX_CONTEST"
+                    />
                 </div>
 
                 {error && (

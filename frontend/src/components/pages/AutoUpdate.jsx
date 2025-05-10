@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {authFetch} from '../utils/authFetch';
-import {handleBusinessError} from "../utils/errors.js";
-import {formatDateForBackend} from "../utils/datetimeTools.js";
+import {authFetch} from '../../utils/authFetch.js';
+import {handleBusinessError} from "../../utils/errors.js";
+import {formatDateForBackend} from "../../utils/datetimeTools.js";
 
 const AutoUpdatePage = () => {
     const [formData, setFormData] = useState({

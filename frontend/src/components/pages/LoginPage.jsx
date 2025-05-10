@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {authFetch, setTokens} from '../utils/authFetch';
-import { handleBusinessError } from '../utils/errors';
+import {authFetch, setTokens} from '../../utils/authFetch.js';
+import { handleBusinessError } from '../../utils/errors.js';
 
 function Login() {
     const navigate = useNavigate();
