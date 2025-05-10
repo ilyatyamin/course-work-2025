@@ -1,6 +1,6 @@
-package org.ilyatyamin.yacontesthelper.autoupdate.dao;
+package org.ilyatyamin.yacontesthelper.autoupdate.dao
 
-public enum TaskStatus {
+enum class TaskStatus {
     ACTIVE,
     PAUSED,
     DISABLED

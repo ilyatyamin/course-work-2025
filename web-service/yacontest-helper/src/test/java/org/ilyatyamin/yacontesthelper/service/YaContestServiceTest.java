@@ -4,7 +4,7 @@ import org.ilyatyamin.yacontesthelper.grades.dto.ContestProblem;
 import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission;
 import org.ilyatyamin.yacontesthelper.grades.dto.GetProblemsResponse;
 import org.ilyatyamin.yacontesthelper.grades.dto.GetSubmissionListResponse;
-import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient;
+import org.ilyatyamin.yacontesthelper.grades.feign.ContestFeignClient;
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService;
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestServiceImpl;
 import org.junit.jupiter.api.Test;

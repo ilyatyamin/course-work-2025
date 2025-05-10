@@ -29,5 +29,9 @@ public class UpdateTaskDao {
     @Column(columnDefinition="TEXT")
     private String credentialsForUpdate;
 
+    @Nullable
+    @Column(columnDefinition="TEXT")
+    private String initialRequest;
+
     private TaskStatus status;
 }

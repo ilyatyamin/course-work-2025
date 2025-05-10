@@ -125,41 +125,6 @@ const AutoUpdatePage = () => {
         }
     };
 
-    const handleRemove = async (e) => {
-        e.preventDefault();
-        if (!formData.autoUpdateId) {
-            setMessage('Введите ID автообновления для удаления');
-            return;
-        }
-
-        try {
-            setIsLoading(true);
-            const res = await authFetch('http://localhost:8080/api/autoupdate', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: parseInt(formData.autoUpdateId)
-                })
-            });
-
-            if (res.ok) {
-                setMessage('Автообновление удалено!');
-                setFormData(prev => ({
-                    ...prev,
-                    autoUpdateId: ''
-                }));
-            } else {
-                await handleBusinessError(res)
-            }
-        } catch (err) {
-            await handleBusinessError(err)
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -324,20 +289,6 @@ const AutoUpdatePage = () => {
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
                                 />
                             </div>
-
-                            <div>
-                                <label htmlFor="autoUpdateId" className="block text-sm font-medium text-gray-700">
-                                    ID автообновления (для удаления)
-                                </label>
-                                <input
-                                    type="text"
-                                    id="autoUpdateId"
-                                    name="autoUpdateId"
-                                    value={formData.autoUpdateId}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
-                                />
-                            </div>
                         </div>
 
                         {message && (
@@ -348,13 +299,6 @@ const AutoUpdatePage = () => {
                         )}
 
                         <div className="flex justify-end space-x-4">
-                            <button
-                                onClick={handleRemove}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Удаление...' : 'Удалить автообновление'}
-                            </button>
                             <button
                                 onClick={handleSetup}
                                 className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"

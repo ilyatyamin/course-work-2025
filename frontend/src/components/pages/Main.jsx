@@ -3,12 +3,36 @@ import { authFetch } from "../../utils/authFetch.js";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import DataTable from "../../utils/tables.jsx";
+import {handleBusinessError} from "../../utils/errors.js";
+import {toast} from "react-toastify";
 
 const Home = () => {
     const [user, setUser] = useState({ firstName: "", lastName: "" });
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    const handleRemove = async (taskId) => {
+        try {
+            const res = await authFetch('http://localhost:8080/api/autoupdate', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: parseInt(taskId)
+                })
+            });
+
+            if (res.ok) {
+                toast.success("Автообновление удалено!")
+            } else {
+                await handleBusinessError(res)
+            }
+        } catch (err) {
+            await handleBusinessError(err)
+        }
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -91,7 +115,7 @@ const Home = () => {
                     {tasks.length === 0 ? (
                         <p className="text-gray-500">Пока нет задач автообновления.</p>
                     ) : (
-                        <DataTable data={tasks} />
+                        <DataTable data={tasks} onDelete={handleRemove} />
                     )}
                 </div>
             </div>

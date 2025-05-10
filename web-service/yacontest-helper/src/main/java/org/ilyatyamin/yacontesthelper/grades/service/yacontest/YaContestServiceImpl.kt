@@ -3,7 +3,7 @@ package org.ilyatyamin.yacontesthelper.grades.service.yacontest
 import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission
 import org.ilyatyamin.yacontesthelper.grades.dto.GetProblemsResponse
 import org.ilyatyamin.yacontesthelper.grades.dto.GetSubmissionListResponse
-import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient
+import org.ilyatyamin.yacontesthelper.grades.feign.ContestFeignClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 

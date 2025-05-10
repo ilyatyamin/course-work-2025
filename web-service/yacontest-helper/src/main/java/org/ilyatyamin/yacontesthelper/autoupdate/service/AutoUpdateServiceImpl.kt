@@ -1,5 +1,6 @@
 package org.ilyatyamin.yacontesthelper.autoupdate.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.ilyatyamin.yacontesthelper.autoupdate.dao.TaskStatus
 import org.ilyatyamin.yacontesthelper.autoupdate.dao.UpdateTaskDao
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateDeleteRequest
@@ -11,7 +12,6 @@ import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.error.YaContestException
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
-import org.ilyatyamin.yacontesthelper.utils.service.secure.EncryptorService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -23,12 +23,26 @@ class AutoUpdateServiceImpl(
     private val schedulingService: SchedulingService,
     private val updateTaskRepository: UpdateTaskRepository,
     private val userService: UserService,
-    private val encryptorService: EncryptorService
+    private val objectMapper: ObjectMapper
 ) : AutoUpdateService {
     companion object {
         private val taskIdGenerator = AtomicLong(0)
         private const val SHEET_PATTERN = "/spreadsheets/d/([a-zA-Z0-9-_]+)"
         private val log = LoggerFactory.getLogger(AutoUpdateServiceImpl::class.java)
+    }
+
+    init {
+        for (task in updateTaskRepository.findAll()) {
+            try {
+                schedulingService.putTaskOnScheduling(
+                    taskId = task.taskId,
+                    request = objectMapper.readValue(task.initialRequest, AutoUpdateRequest::class.java)
+                )
+                log.info("[INIT] Reschedule task ${task.taskId}")
+            } catch (e: Exception) {
+                log.error("Error in init-section while scheduling task ${task.taskId}", e)
+            }
+        }
     }
 
     override fun setOnAutoUpdate(autoUpdateRequest: AutoUpdateRequest): AutoUpdateResponse {
@@ -55,6 +69,7 @@ class AutoUpdateServiceImpl(
                 autoUpdateRequest.cronExpression,
                 autoUpdateRequest.spreadsheetUrl,
                 autoUpdateRequest.credentialsGoogle,
+                objectMapper.writeValueAsString(autoUpdateRequest),
                 TaskStatus.ACTIVE
             )
         )
@@ -70,6 +85,7 @@ class AutoUpdateServiceImpl(
         }
         val dao = updateTaskRepository.getReferenceById(request.id)
         schedulingService.removeTaskFromScheduling(dao.taskId)
+        updateTaskRepository.deleteById(request.id)
     }
 
     override fun getAutoUpdateInfo(username: String?): List<AutoUpdateInfo> {

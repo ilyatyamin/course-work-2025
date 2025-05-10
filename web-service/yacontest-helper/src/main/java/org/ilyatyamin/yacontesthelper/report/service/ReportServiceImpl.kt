@@ -10,7 +10,7 @@ import com.vladsch.flexmark.util.misc.Extension
 import kotlinx.coroutines.*
 import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmission
 import org.ilyatyamin.yacontesthelper.grades.dto.ContestSubmissionWithCode
-import org.ilyatyamin.yacontesthelper.grades.service.feign.ContestFeignClient
+import org.ilyatyamin.yacontesthelper.grades.feign.ContestFeignClient
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService
 import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest
