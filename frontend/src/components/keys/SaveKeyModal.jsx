@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {authFetch} from "../../utils/authFetch.js";
 import {toast} from "react-toastify";
+import {handleBusinessError} from "../../utils/errors.js";
 
 const SaveKeyModal = ({isOpen, onClose, type, keyValue}) => {
     const [description, setDescription] = useState("");
@@ -24,23 +25,33 @@ const SaveKeyModal = ({isOpen, onClose, type, keyValue}) => {
             toast.info("Ключ успешно сохранён")
             onClose();
         } else {
-            toast.info("Ошибка при сохранении ключа")
+            handleBusinessError(res);
         }
     };
+
+    function getHeader() {
+        switch (type) {
+            case "GOOGLE_SHEETS":
+                return "Хотите сохранить сервисный ключ от гугл таблиц в память, чтобы в дальнейшем его не вводить?"
+            case "YANDEX_CONTEST":
+                return "Хотите сохранить API ключ от Яндекс Контеста в память, чтобы в дальнейшем его не вводить?"
+            default:
+                return "Неверный тип"
+        }
+    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">Сохранить ключ</h2>
                 <p className="text-gray-600 mb-2">
-                    Хотите сохранить этот ключ для повторного использования?
+                    {getHeader()}
                 </p>
-                <p className="text-sm text-gray-500 break-all mb-4">Ключ: {keyValue}</p>
 
-                <label className="block mb-1 text-sm font-medium text-gray-700">Описание:</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Описание:</label>
                 <input
                     type="text"
-                    className="input w-full mb-4"
+                    className="input w-fit mb-4"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required

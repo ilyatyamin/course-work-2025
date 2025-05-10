@@ -19,12 +19,10 @@ function ReportPage() {
         format: 'PDF'
     });
 
-    const [output, setOutput] = useState('');
     const [tableId, setTableId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [gradesData, setGradesData] = useState(null);
-    const navigate = useNavigate();
 
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [keyToSave, setKeyToSave] = useState('');
@@ -246,7 +244,7 @@ function ReportPage() {
                             <textarea
                                 id="participantsList"
                                 name="participantsList"
-                                placeholder="Участники, каждый с новой строки. Оставьте пустым, чтобы построить отчет для всех участников соревнования"
+                                placeholder="Каждый с новой строки. Участники, каждый с новой строки. Оставьте пустым, чтобы построить отчет для всех участников соревнования"
                                 value={formData.participantsList}
                                 onChange={handleChange}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
@@ -269,7 +267,7 @@ function ReportPage() {
 
                         <div>
                             <label htmlFor="yandexKey" className="block text-sm font-medium text-gray-700">
-                                Яндекс ключ
+                                Ключ к Yandex API
                             </label>
                             <div className="flex items-center gap-2">
                                 <input

@@ -23,7 +23,11 @@ export async function handleBusinessError(err, loaderJobId = null) {
 function getErrorMessage(json) {
     if (Object.prototype.hasOwnProperty.call(json, 'message') &&
         Object.prototype.hasOwnProperty.call(json, 'code')) {
-        return `Произошла ошибка. ${json.message} (${json.code})`;
+        if (json.code != 500) {
+            return `Произошла ошибка. ${json.message} (${json.code})`;
+        } else {
+            return `Произошла внутренняя ошибка (${json.code})`;
+        }
     }
     return 'Произошла ошибка :('
 }

@@ -13,7 +13,7 @@ data class UserKeyDao(
     @Column(name = "user_id")
     var userId: Long? = null,
 
-    @Column(name = "key", nullable = false)
+    @Column(name = "key", nullable = false, columnDefinition = "TEXT")
     var key: String? = null,
 
     @Column(name = "description", nullable = false)
