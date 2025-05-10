@@ -3,9 +3,11 @@ package org.ilyatyamin.yacontesthelper.security.service
 import org.ilyatyamin.yacontesthelper.error.AuthException
 import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.security.dao.UserDao
+import org.ilyatyamin.yacontesthelper.security.enums.Role
 import org.ilyatyamin.yacontesthelper.security.repository.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 import kotlin.jvm.optionals.getOrNull
@@ -15,13 +17,19 @@ import kotlin.jvm.optionals.getOrNull
 class UserService(
     private var userRepository: UserRepository
 ) {
-    fun getIdByUsername(): Long? {
+    fun getCurrentUserId(): Long? {
         val userName = SecurityContextHolder.getContext().authentication.credentials as String?
         userName?.let {
             val user = userRepository.findByUsername(userName)
             return user.getOrNull()?.id
         }
         return null
+    }
+
+    fun getCurrentUserRole(): List<Role> {
+        return SecurityContextHolder.getContext().authentication.authorities
+            .map { Role.valueOf(it.authority) }
+            .toList()
     }
 
     internal fun createUser(dao: UserDao): UserDao {

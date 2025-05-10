@@ -51,7 +51,7 @@ class GradesServiceImpl(
             utilsService.processLocalDateTime(gradesRequest?.deadline)
         )
 
-        val userId = userService.getIdByUsername()
+        val userId = userService.getCurrentUserId()
         val result = gradesResultRepository.saveAndFlush(
             GradesResult(userId, resultTable)
         )
@@ -80,12 +80,12 @@ class GradesServiceImpl(
         }
         val result = gradesResultRepository.getReferenceById(tableId)
 
-        val userId = userService.getIdByUsername()
+        val userId = userService.getCurrentUserId()
         if (result.userId != userId) {
             log.warn("User #${userId} tried to get someone else table with id $tableId")
             throw YaContestException(
                 HttpStatus.FORBIDDEN.value(),
-                ExceptionMessages.TABLE_ACCESS_FORBIDDEN.message
+                ExceptionMessages.FORBIDDEN.message
             )
         }
 

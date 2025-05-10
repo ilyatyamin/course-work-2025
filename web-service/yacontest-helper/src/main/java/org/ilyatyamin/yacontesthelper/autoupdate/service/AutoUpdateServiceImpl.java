@@ -37,7 +37,7 @@ public class AutoUpdateServiceImpl implements AutoUpdateService {
         Long taskId = taskIdGenerator.incrementAndGet();
         schedulingService.putTaskOnScheduling(taskId, autoUpdateRequest);
 
-        var userId = userService.getIdByUsername();
+        var userId = userService.getCurrentUserId();
         UpdateTaskDao dao = updateTaskRepository.save(
                 new UpdateTaskDao(null, userId, taskId,
                         autoUpdateRequest.getCronExpression(),

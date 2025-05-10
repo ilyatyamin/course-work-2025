@@ -11,7 +11,8 @@ enum class ExceptionMessages(val message: String) {
     GOOGLE_SHEETS_NOT_FOUND("Google Таблица с данным ID не найдена"),
     UPDATE_TASK_NOT_FOUND("Джоб по обновлению оценок с данным ID не найден"),
 
-    TABLE_ACCESS_FORBIDDEN("Доступ к этой таблице запрещен, обратитесь к ее создателю"),
+    FORBIDDEN("Доступ запрещен"),
+
 
     AUTH_FIELD_IS_NULL("Логин или пароль не могут быть пустыми"),
 
