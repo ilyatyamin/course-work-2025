@@ -25,8 +25,10 @@ function Register() {
 
             if (res.ok) {
                 const data = await res.json();
+
+                localStorage.setItem('username', form.username.value)
                 setTokens(data.authToken, data.refreshToken);
-                navigate('/report');
+                navigate('/');
             } else {
                 await handleBusinessError(res);
             }

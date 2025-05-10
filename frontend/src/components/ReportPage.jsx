@@ -333,7 +333,7 @@ function ReportPage() {
                         >
                             Скачать детальный отчет в Markdown
                         </button>
-                        <DataTable data={gradesData}/>
+                        <DataTable data={gradesData} transpose/>
                     </div>
                 )}
 

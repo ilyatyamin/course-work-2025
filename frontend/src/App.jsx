@@ -11,6 +11,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import Navbar from './components/Navbar';
 import './App.css';
 import RegisterPage from "./components/RegisterPage.jsx";
+import MainPage from "./components/Main.jsx";
 
 const LayoutWithNavbar = ({children}) => (
     <div>
@@ -29,6 +30,17 @@ const AppRoutes = () => (
         <Route
             path="/register"
             element={<RegisterPage/>}
+        />
+
+        <Route
+            path="/"
+            element={
+                <ProtectedRoute>
+                    <LayoutWithNavbar>
+                        <MainPage/>
+                    </LayoutWithNavbar>
+                </ProtectedRoute>
+            }
         />
 
         <Route

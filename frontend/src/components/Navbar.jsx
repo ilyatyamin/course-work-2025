@@ -16,7 +16,7 @@ const Navbar = () => {
                 <div className="flex justify-between h-16">
                     <div className="flex">
                         <div className="flex-shrink-0 flex items-center">
-                            <Link to="/report" className="text-xl font-bold text-orange-600">
+                            <Link to="/" className="text-xl font-bold text-orange-600">
                                 YaContest Helper
                             </Link>
                         </div>

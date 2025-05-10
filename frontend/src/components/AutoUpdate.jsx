@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {authFetch} from '../utils/authFetch';
 import {handleBusinessError} from "../utils/errors.js";
+import {formatDateForBackend} from "../utils/datetimeTools.js";
 
 const AutoUpdatePage = () => {
     const [formData, setFormData] = useState({
@@ -24,10 +25,11 @@ const AutoUpdatePage = () => {
     const handleSetup = async (e) => {
         e.preventDefault();
         try {
+            const deadlineValue = formData.deadline === '' ? null : formatDateForBackend(formData.deadline);
             const payload = {
                 contestId: formData.contestId,
                 participants: formData.participants.split(',').map(p => p.trim()),
-                deadline: formData.deadline,
+                deadline: deadlineValue,
                 yandexKey: formData.yandexKey,
                 credentialsGoogle: formData.credentialsGoogle,
                 spreadsheetUrl: formData.spreadsheetUrl,
@@ -35,7 +37,7 @@ const AutoUpdatePage = () => {
                 cronExpression: formData.cronExpression
             };
 
-            const res = await authFetch('http://localhost:8080/api/update', {
+            const res = await authFetch('http://localhost:8080/api/autoupdate', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ const AutoUpdatePage = () => {
         }
 
         try {
-            const res = await authFetch('http://localhost:8080/api/update', {
+            const res = await authFetch('http://localhost:8080/api/autoupdate', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,15 +115,15 @@ const AutoUpdatePage = () => {
 
                             <div>
                                 <label htmlFor="participants" className="block text-sm font-medium text-gray-700">
-                                    Участники (через запятую)
+                                    Участники, каждый с новой строки
                                 </label>
-                                <input
-                                    type="text"
+                                <textarea
                                     id="participants"
                                     name="participants"
                                     value={formData.participants}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border"
+                                    placeholder="Оставьте пустым, чтобы построить отчет для всех участников соревнования"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 border w-full"
                                 />
                             </div>
 
