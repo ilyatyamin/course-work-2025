@@ -1,7 +1,6 @@
-package org.ilyatyamin.yacontesthelper.error;
+package org.ilyatyamin.yacontesthelper.error
 
-public record ErrorResponse(
-        Integer code,
-        String message
-) {
-}
+data class ErrorResponse(
+    val code: Int,
+    val message: String?
+)
