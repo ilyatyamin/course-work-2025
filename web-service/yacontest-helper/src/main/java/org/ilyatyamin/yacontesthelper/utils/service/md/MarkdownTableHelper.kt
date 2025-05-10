@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.utils
+package org.ilyatyamin.yacontesthelper.utils.service.md
 
 import kotlin.math.max
 

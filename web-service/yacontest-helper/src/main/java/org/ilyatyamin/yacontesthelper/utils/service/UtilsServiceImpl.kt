@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.utils
+package org.ilyatyamin.yacontesthelper.utils.service
 
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime

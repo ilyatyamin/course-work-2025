@@ -13,7 +13,7 @@ import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcess
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
-import org.ilyatyamin.yacontesthelper.utils.UtilsService
+import org.ilyatyamin.yacontesthelper.utils.service.UtilsService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service

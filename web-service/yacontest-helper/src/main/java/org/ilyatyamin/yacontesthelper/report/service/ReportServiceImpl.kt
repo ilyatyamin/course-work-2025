@@ -15,9 +15,9 @@ import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcess
 import org.ilyatyamin.yacontesthelper.grades.service.yacontest.YaContestService
 import org.ilyatyamin.yacontesthelper.report.dto.ReportRequest
 import org.ilyatyamin.yacontesthelper.report.dto.SaveFormat
-import org.ilyatyamin.yacontesthelper.utils.HeaderLevel
-import org.ilyatyamin.yacontesthelper.utils.MarkdownFormatter
-import org.ilyatyamin.yacontesthelper.utils.UtilsService
+import org.ilyatyamin.yacontesthelper.utils.enums.HeaderLevel
+import org.ilyatyamin.yacontesthelper.utils.service.md.MarkdownFormatter
+import org.ilyatyamin.yacontesthelper.utils.service.UtilsService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.ByteArrayOutputStream

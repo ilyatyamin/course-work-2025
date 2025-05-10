@@ -1,4 +1,6 @@
-package org.ilyatyamin.yacontesthelper.utils
+package org.ilyatyamin.yacontesthelper.utils.service.md
+
+import org.ilyatyamin.yacontesthelper.utils.enums.HeaderLevel
 
 class MarkdownFormatter private constructor() {
     private val sb = StringBuilder()
