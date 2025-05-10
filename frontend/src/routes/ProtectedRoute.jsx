@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 function ProtectedRoute({ children }) {
+
     const authToken = localStorage.getItem('authToken');
     const refreshToken = localStorage.getItem('refreshToken');
 

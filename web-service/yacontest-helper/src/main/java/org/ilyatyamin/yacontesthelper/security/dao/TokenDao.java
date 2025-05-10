@@ -2,6 +2,7 @@ package org.ilyatyamin.yacontesthelper.security.dao;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.ilyatyamin.yacontesthelper.security.enums.TokenType;
 
 import java.time.LocalDateTime;
 import java.util.Date;

@@ -10,6 +10,7 @@ import AutoUpdatePage from './components/AutoUpdate';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Navbar from './components/Navbar';
 import './App.css';
+import RegisterPage from "./components/RegisterPage.jsx";
 
 const LayoutWithNavbar = ({children}) => (
     <div>
@@ -23,6 +24,11 @@ const AppRoutes = () => (
         <Route
             path="/login"
             element={<LoginPage/>}
+        />
+
+        <Route
+            path="/register"
+            element={<RegisterPage/>}
         />
 
         <Route

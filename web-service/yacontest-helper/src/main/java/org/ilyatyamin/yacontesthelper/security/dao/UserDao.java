@@ -1,6 +1,7 @@
 package org.ilyatyamin.yacontesthelper.security.dao;
 
 import jakarta.persistence.Entity;
+import org.ilyatyamin.yacontesthelper.security.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,12 +20,18 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Table(name = "users")
 public class UserDao implements UserDetails {
-    public UserDao(final String username, final String password,
-                   final String email, final Role role) {
+    public UserDao(final String username,
+                   final String password,
+                   final String email,
+                   final String firstName,
+                   final String lastName,
+                   final Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -41,6 +48,12 @@ public class UserDao implements UserDetails {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

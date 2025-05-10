@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys
 import org.ilyatyamin.yacontesthelper.error.AuthException
 import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.security.dao.TokenDao
-import org.ilyatyamin.yacontesthelper.security.dao.TokenType
+import org.ilyatyamin.yacontesthelper.security.enums.TokenType
 import org.ilyatyamin.yacontesthelper.security.dao.UserDao
 import org.ilyatyamin.yacontesthelper.security.repository.TokenRepository
 import org.slf4j.LoggerFactory

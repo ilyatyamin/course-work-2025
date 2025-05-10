@@ -4,7 +4,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.ilyatyamin.yacontesthelper.security.dao.TokenType
+import org.ilyatyamin.yacontesthelper.security.enums.TokenType
 import org.ilyatyamin.yacontesthelper.security.service.JwtTokenService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
 import org.slf4j.LoggerFactory

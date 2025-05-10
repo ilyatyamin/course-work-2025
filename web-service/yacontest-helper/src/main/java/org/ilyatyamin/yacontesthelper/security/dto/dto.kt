@@ -16,7 +16,13 @@ data class RegisterRequest(
 
     @Size(min = 5, max = 255, message = "Длина пароля должна быть не более 255 символов и не менее 5 символов")
     @NotBlank(message = "Пароль не может быть пустым")
-    val password: String
+    val password: String,
+
+    @Size(min = 0, max = 20, message = "Длина имени должна быть не более 20 символов")
+    val firstName: String?,
+
+    @Size(min = 0, max = 20, message = "Длина фамилии должна быть не более 20 символов")
+    val lastName: String?,
 )
 
 data class LoginRequest(

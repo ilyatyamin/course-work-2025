@@ -1,7 +1,7 @@
 package org.ilyatyamin.yacontesthelper.security.service
 
-import org.ilyatyamin.yacontesthelper.security.dao.Role
-import org.ilyatyamin.yacontesthelper.security.dao.TokenType
+import org.ilyatyamin.yacontesthelper.security.enums.Role
+import org.ilyatyamin.yacontesthelper.security.enums.TokenType
 import org.ilyatyamin.yacontesthelper.security.dao.UserDao
 import org.ilyatyamin.yacontesthelper.security.dto.LoginRequest
 import org.ilyatyamin.yacontesthelper.security.dto.RefreshTokenRequest
@@ -24,6 +24,8 @@ class AuthService(
             request.username,
             passwordEncoder.encode(request.password),
             request.email,
+            request.firstName,
+            request.lastName,
             Role.ROLE_USER
         )
         userService.createUser(user)

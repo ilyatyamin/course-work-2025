@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-class AuthController {
-    @Autowired
-    private lateinit var authService: AuthService
-
+class AuthController(
+    @Autowired private var authService: AuthService
+) {
     @PostMapping("/register")
     fun registerUser(@RequestBody registerRequest: RegisterRequest): ResponseEntity<TokenResponse> {
         return ResponseEntity.ok(authService.registerUser(registerRequest))

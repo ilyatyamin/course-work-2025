@@ -95,3 +95,11 @@ function clearAuthDataAndRedirectToLogin() {
     localStorage.clear();
     window.location.href = LOGIN_PAGE_URL;
 }
+
+export function setTokens(authToken, refreshToken) {
+    localStorage.setItem('authToken', authToken);
+    localStorage.setItem('updatedAuthToken', Date.now().toString());
+
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('updatedRefreshToken', Date.now().toString());
+}
