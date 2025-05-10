@@ -14,6 +14,10 @@ const Home = () => {
         async function fetchData() {
             try {
                 const username = localStorage.getItem("username");
+                if (!username) {
+                    navigate("/login");
+                    return;
+                }
 
                 const payload = {'username' : username};
 

@@ -16,7 +16,7 @@ data class AutoUpdateRequest(
     val deadline: String?,
     val yandexKey: String,
     val credentialsGoogle: String,
-    val spreadsheetUrl: String,
+    var spreadsheetUrl: String,
     val sheetName: String,
     val cronExpression: String
 )

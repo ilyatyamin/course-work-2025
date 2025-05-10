@@ -9,6 +9,8 @@ enum class ExceptionMessages(val message: String) {
     CONTEST_NOT_FOUND("Контест с данным ID не найден"),
     GRADES_TABLE_NOT_FOUND("Таблица оценок с данным ID не найдена"),
     GOOGLE_SHEETS_NOT_FOUND("Google Таблица с данным ID не найдена"),
+    GOOGLE_SHEETS_INCORRECT_URL("Проверьте, что URL вашей гугл таблицы корректный"),
+
     UPDATE_TASK_NOT_FOUND("Джоб по обновлению оценок с данным ID не найден"),
 
     FORBIDDEN("Доступ запрещен"),

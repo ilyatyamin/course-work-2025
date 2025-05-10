@@ -7,6 +7,7 @@ import org.ilyatyamin.yacontesthelper.client.dto.GetUserInfoResponse
 import org.ilyatyamin.yacontesthelper.client.service.ClientService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController
 class ClientController(
     private val clientService: ClientService,
 ) {
-    @GetMapping
+    @PostMapping
     fun getUserInfo(
         @RequestBody request: GetUserInfoRequest
     ): ResponseEntity<GetUserInfoResponse> {
         return ResponseEntity.ok(clientService.getUserInfo(request.username))
     }
 
-    @GetMapping("/autoupdate")
+    @PostMapping("/autoupdate")
     fun getAutoUpdateJobs(
         @RequestBody request: GetUserAutoUpdatesRequest
     ): ResponseEntity<GetUserAutoUpdatesResponse> {

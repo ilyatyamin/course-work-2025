@@ -11,6 +11,7 @@ import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.error.YaContestException
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicLong
@@ -24,12 +25,18 @@ class AutoUpdateServiceImpl(
 ) : AutoUpdateService {
     companion object {
         private val taskIdGenerator = AtomicLong(0)
+        private const val SHEET_PATTERN = "/spreadsheets/d/([a-zA-Z0-9-_]+)"
+        private val log = LoggerFactory.getLogger(AutoUpdateServiceImpl::class.java)
     }
 
     override fun setOnAutoUpdate(autoUpdateRequest: AutoUpdateRequest): AutoUpdateResponse {
-        if (!checkIfWritingInSheetPossible(autoUpdateRequest.credentialsGoogle, autoUpdateRequest.spreadsheetUrl
-            )
-        ) {
+        autoUpdateRequest.spreadsheetUrl = getSpreadsheetId(autoUpdateRequest.spreadsheetUrl)
+
+        val isWritingPossible = checkIfWritingInSheetPossible(
+            googleCredentials = autoUpdateRequest.credentialsGoogle,
+            spreadsheetUrl = autoUpdateRequest.spreadsheetUrl
+        )
+        if (!isWritingPossible) {
             throw YaContestException(
                 HttpStatus.NOT_FOUND.value(),
                 ExceptionMessages.GOOGLE_SHEETS_NOT_FOUND.message
@@ -75,6 +82,19 @@ class AutoUpdateServiceImpl(
                     status = it.status
                 )
             }
+    }
+
+    private fun getSpreadsheetId(spreadsheetUrl: String): String {
+        val spreadsheetId = Regex(SHEET_PATTERN).find(spreadsheetUrl)?.groupValues?.getOrNull(1)
+        if (spreadsheetId == null) {
+            throw YaContestException(
+                HttpStatus.BAD_REQUEST.value(),
+                ExceptionMessages.GOOGLE_SHEETS_INCORRECT_URL.message
+            )
+        } else {
+            log.warn("spreadSheetId: $spreadsheetUrl")
+            return spreadsheetId
+        }
     }
 
     private fun checkIfWritingInSheetPossible(googleCredentials: String, spreadsheetUrl: String): Boolean {
