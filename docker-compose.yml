@@ -1,16 +1,16 @@
 services:
   backend_spring:
     container_name: backend_spring
-#    restart: on-failure
+    #    restart: on-failure
     build:
       context: ./web-service/yacontest-helper/.
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8081"
     expose:
-      - "8080"
+      - "8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5433/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=db_password
       - TZ=Europe/Moscow
@@ -28,29 +28,27 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=db_password
       - TZ=Europe/Moscow
+
+    ports:
+      - "5433:5433"
+    command: [ "postgres", "-p", "5433" ]
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres -p 5433" ]
       interval: 20s
       timeout: 5s
       retries: 5
       start_period: 10s
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend/.
+      dockerfile: Dockerfile
     ports:
-    - "5432:5432"
-
-#  frontend:
-#    container_name: frontend
-#    build:
-#      context: ./frontend/.
-#      dockerfile: Dockerfile
-#    ports:
-#      - "3030:3030"
-#    expose:
-#      - "3030"
-#    volumes:
-#      - .:/app
-#      - /app/node_modules
-#    depends_on:
-#      - backend_spring
-#    environment:
-#      - CHOKIDAR_USEPOLLING=true
+      - "3030:80"
+    expose:
+      - "3030"
+    depends_on:
+      - backend_spring
+    environment:
+      - CHOKIDAR_USEPOLLING=true
