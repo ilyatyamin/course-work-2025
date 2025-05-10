@@ -14,7 +14,7 @@ enum class ExceptionMessages(val message: String) {
     UPDATE_TASK_NOT_FOUND("Джоб по обновлению оценок с данным ID не найден"),
 
     FORBIDDEN("Доступ запрещен"),
-
+    KEY_NOT_FOUND("Ключа с данным ID не найдено"),
 
     AUTH_FIELD_IS_NULL("Логин или пароль не могут быть пустыми"),
 
