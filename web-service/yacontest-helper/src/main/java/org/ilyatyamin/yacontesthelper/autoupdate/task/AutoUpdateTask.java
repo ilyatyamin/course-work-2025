@@ -7,6 +7,7 @@ import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequest;
 import org.ilyatyamin.yacontesthelper.grades.enums.RequestType;
 import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService;
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService;
+import org.ilyatyamin.yacontesthelper.utils.service.secure.EncryptorService;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 public class AutoUpdateTask implements Runnable {
     private GoogleSheetsService googleSheetsService;
     private GradesService gradesService;
+    private EncryptorService encryptorService;
 
     private final Long taskId;
     private final AutoUpdateRequest info;

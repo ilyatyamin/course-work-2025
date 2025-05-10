@@ -1,4 +1,4 @@
-package org.ilyatyamin.yacontesthelper.client.service
+package org.ilyatyamin.yacontesthelper.client.service.info
 
 import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateInfo
 import org.ilyatyamin.yacontesthelper.client.dto.GetUserInfoResponse

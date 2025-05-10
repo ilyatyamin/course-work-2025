@@ -11,6 +11,7 @@ import org.ilyatyamin.yacontesthelper.error.ExceptionMessages
 import org.ilyatyamin.yacontesthelper.error.YaContestException
 import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
 import org.ilyatyamin.yacontesthelper.security.service.UserService
+import org.ilyatyamin.yacontesthelper.utils.service.secure.EncryptorService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -21,7 +22,8 @@ class AutoUpdateServiceImpl(
     private val googleSheetsService: GoogleSheetsService,
     private val schedulingService: SchedulingService,
     private val updateTaskRepository: UpdateTaskRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val encryptorService: EncryptorService
 ) : AutoUpdateService {
     companion object {
         private val taskIdGenerator = AtomicLong(0)
