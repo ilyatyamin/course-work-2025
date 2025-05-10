@@ -1,9 +1,10 @@
-package org.ilyatyamin.yacontesthelper.autoupdate.repository;
+package org.ilyatyamin.yacontesthelper.autoupdate.repository
 
-import org.ilyatyamin.yacontesthelper.autoupdate.dao.UpdateTaskDao;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.ilyatyamin.yacontesthelper.autoupdate.dao.UpdateTaskDao
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 @Repository
-public interface UpdateTaskRepository extends JpaRepository<UpdateTaskDao, Long> {
+interface UpdateTaskRepository : JpaRepository<UpdateTaskDao, Long> {
+    fun findAllByOwnerId(ownerId: Long): List<UpdateTaskDao>
 }

@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping
+@RequestMapping("/api")
 public class AutoUpdateController {
     private final AutoUpdateService autoUpdateService;
 
-    @PutMapping("/api/update")
+    @PutMapping("/autoupdate")
     public ResponseEntity<AutoUpdateResponse> setAutoUpdate(@RequestBody AutoUpdateRequest request) {
         AutoUpdateResponse response = autoUpdateService.setOnAutoUpdate(request);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/update")
+    @DeleteMapping("/autoupdate")
     public ResponseEntity<Void> removeAutoUpdate(@RequestBody AutoUpdateDeleteRequest request) {
         autoUpdateService.removeFromAutoUpdate(request);
         return ResponseEntity.ok().build();

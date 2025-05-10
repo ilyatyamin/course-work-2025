@@ -6,6 +6,7 @@ import org.ilyatyamin.yacontesthelper.grades.dao.GradesResult
 import org.ilyatyamin.yacontesthelper.grades.dto.GoogleSheetsRequest
 import org.ilyatyamin.yacontesthelper.grades.dto.GradesRequest
 import org.ilyatyamin.yacontesthelper.grades.dto.GradesResponse
+import org.ilyatyamin.yacontesthelper.grades.enums.RequestType
 import org.ilyatyamin.yacontesthelper.grades.repository.GradesResultRepository
 import org.ilyatyamin.yacontesthelper.grades.service.excel.ExcelFormatterServiceImpl
 import org.ilyatyamin.yacontesthelper.grades.service.processor.SubmissionProcessorService
@@ -31,7 +32,7 @@ class GradesServiceImpl(
         private val log = LoggerFactory.getLogger(GradesServiceImpl::class.java)
     }
 
-    override fun getGradesList(gradesRequest: GradesRequest?): GradesResponse {
+    override fun getGradesList(gradesRequest: GradesRequest?, requestType: RequestType): GradesResponse {
         val problemList = yaContestService.getListOfProblems(
             contestId = gradesRequest?.contestId,
             yandexAuthKey = gradesRequest?.yandexKey
@@ -51,7 +52,11 @@ class GradesServiceImpl(
             utilsService.processLocalDateTime(gradesRequest?.deadline)
         )
 
-        val userId = userService.getCurrentUserId()
+        val userId: Long? = if (requestType == RequestType.BY_CLIENT) {
+            userService.getCurrentUserId()
+        } else {
+            null
+        }
         val result = gradesResultRepository.saveAndFlush(
             GradesResult(userId, resultTable)
         )

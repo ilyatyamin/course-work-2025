@@ -1,59 +1,48 @@
-package org.ilyatyamin.yacontesthelper.autoupdate.service;
+package org.ilyatyamin.yacontesthelper.autoupdate.service
 
-import lombok.extern.slf4j.Slf4j;
-import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
-import org.ilyatyamin.yacontesthelper.autoupdate.task.AutoUpdateTask;
-import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService;
-import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
+import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest
+import org.ilyatyamin.yacontesthelper.autoupdate.task.AutoUpdateTask
+import org.ilyatyamin.yacontesthelper.grades.service.core.GradesService
+import org.ilyatyamin.yacontesthelper.grades.service.sheets.GoogleSheetsService
+import org.slf4j.LoggerFactory
+import org.springframework.scheduling.Trigger
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
+import org.springframework.scheduling.support.CronTrigger
+import org.springframework.stereotype.Service
+import java.util.concurrent.ScheduledFuture
 
 @Service
-@Slf4j
-public class SchedulingServiceImpl implements SchedulingService {
-    private final ThreadPoolTaskScheduler updateGoogleSheetsScheduler;
-    private final GoogleSheetsService googleSheetsService;
-    private final GradesService gradesService;
+class SchedulingServiceImpl(
+    private val updateGoogleSheetsScheduler: ThreadPoolTaskScheduler,
+    private val googleSheetsService: GoogleSheetsService,
+    private val gradesService: GradesService
+) : SchedulingService {
+    private val scheduledTasks: MutableMap<Long?, ScheduledFuture<*>?> = mutableMapOf()
 
-    private final Map<Long, ScheduledFuture<?>> scheduledTasks;
-
-    public SchedulingServiceImpl(ThreadPoolTaskScheduler updateGoogleSheetsScheduler,
-                                 GoogleSheetsService googleSheetsService,
-                                 GradesService gradesService) {
-        this.updateGoogleSheetsScheduler = updateGoogleSheetsScheduler;
-        this.googleSheetsService = googleSheetsService;
-        this.gradesService = gradesService;
-        this.scheduledTasks = new HashMap<>();
+    companion object {
+        private val log = LoggerFactory.getLogger(SchedulingServiceImpl::class.java)
     }
 
-    @Override
-    public void putTaskOnScheduling(Long taskId, AutoUpdateRequest request) {
-        AutoUpdateTask task = new AutoUpdateTask(googleSheetsService, gradesService, taskId, request);
-        Trigger trigger = new CronTrigger(request.getCronExpression());
+    override fun putTaskOnScheduling(taskId: Long?, request: AutoUpdateRequest) {
+        val task = AutoUpdateTask(googleSheetsService, gradesService, taskId, request)
+        val trigger: Trigger = CronTrigger(request.cronExpression)
         try {
-            var future = updateGoogleSheetsScheduler.schedule(task, trigger);
-            scheduledTasks.put(taskId, future);
-            log.info("Scheduled task with id {} successfully.", taskId);
-        } catch (Exception e) {
-            log.warn("Error while scheduling task with id {}.", taskId, e);
-            throw e;
+            val future = updateGoogleSheetsScheduler.schedule(task, trigger)
+            scheduledTasks[taskId] = future
+            log.info("Scheduled task with id {} successfully.", taskId)
+        } catch (e: Exception) {
+            log.warn("Error while scheduling task with id {}.", taskId, e)
+            throw e
         }
     }
 
-    @Override
-    public void removeTaskFromScheduling(Long taskId) {
+    override fun removeTaskFromScheduling(taskId: Long?) {
         if (scheduledTasks.containsKey(taskId)) {
-            scheduledTasks.get(taskId).cancel(true);
-            scheduledTasks.remove(taskId);
-            log.info("Removed scheduled task with id {} successfully.", taskId);
+            scheduledTasks[taskId]!!.cancel(true)
+            scheduledTasks.remove(taskId)
+            log.info("Removed scheduled task with id {} successfully.", taskId)
         } else {
-            log.info("Try to remove scheduled task with id {}. It not exists.", taskId);
+            log.info("Try to remove scheduled task with id {}. It not exists.", taskId)
         }
     }
 }

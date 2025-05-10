@@ -1,9 +1,8 @@
-package org.ilyatyamin.yacontesthelper.autoupdate.service;
+package org.ilyatyamin.yacontesthelper.autoupdate.service
 
-import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateDeleteRequest;
-import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest;
+import org.ilyatyamin.yacontesthelper.autoupdate.dto.AutoUpdateRequest
 
-public interface SchedulingService {
-    void putTaskOnScheduling(Long taskId, AutoUpdateRequest request);
-    void removeTaskFromScheduling(Long taskId);
+interface SchedulingService {
+    fun putTaskOnScheduling(taskId: Long?, request: AutoUpdateRequest)
+    fun removeTaskFromScheduling(taskId: Long?)
 }
