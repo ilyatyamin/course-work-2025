@@ -1,6 +1,6 @@
 import React from 'react';
 
-function DataTable({data, transpose = false, onDelete = null}) {
+function DataTable({ data, transpose = false, onDelete = null }) {
     if (!data || Object.keys(data).length === 0) {
         return <p className="text-gray-500">Нет данных для отображения.</p>;
     }
@@ -8,6 +8,38 @@ function DataTable({data, transpose = false, onDelete = null}) {
     const rowEntries = Object.entries(data);
     const colKeys = Object.keys(rowEntries[0][1]);
 
+    if (transpose) {
+        return (
+            <div className="overflow-x-auto">
+                <table className="min-w-full border border-gray-300">
+                    <thead className="bg-gray-50">
+                    <tr>
+                        <th className="py-2 px-4 border-b font-semibold text-left">Поле</th>
+                        {rowEntries.map(([id]) => (
+                            <th key={id} className="py-2 px-4 border-b font-semibold text-left">
+                                {id}
+                            </th>
+                        ))}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {colKeys.map((key, i) => (
+                        <tr key={i} className="hover:bg-gray-100">
+                            <td className="py-2 px-4 border-b font-semibold">{key}</td>
+                            {rowEntries.map(([id, rowData]) => (
+                                <td key={`${id}-${key}`} className="py-2 px-4 border-b text-sm text-gray-700">
+                                    {rowData[key]}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+
+    // Обычный режим (без transpose)
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full border border-gray-300">
@@ -33,7 +65,6 @@ function DataTable({data, transpose = false, onDelete = null}) {
                                 {val}
                             </td>
                         ))}
-
                         {onDelete && (
                             <td className="py-2 px-4 border-b">
                                 <button

@@ -78,7 +78,7 @@ class ReportServiceImpl(
         totalGrades: Map<String, Map<String, Double>?>,
         submissionStatsOk: Map<String, Double>,
         codeSubmissions: List<ContestSubmissionWithCode>
-    ): String? {
+    ): String {
         val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)
         val nowDt = formatter.format(ZonedDateTime.now(ZoneId.systemDefault()))
 

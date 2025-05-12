@@ -1,0 +1,878 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "YaContest Helper API",
+    "description": "API для помощника работы с Яндекс Контестом",
+    "contact": {
+      "name": "Ilya Tyamin",
+      "email": "tyaminilya@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/user/secretKey": {
+      "put": {
+        "tags": [
+          "key-controller"
+        ],
+        "operationId": "addNewKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNewKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "key-controller"
+        ],
+        "operationId": "getAllUserKeys",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAllUserKeysRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllUserKeysResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "key-controller"
+        ],
+        "operationId": "deleteNewKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/autoupdate": {
+      "put": {
+        "tags": [
+          "auto-update-controller"
+        ],
+        "operationId": "setAutoUpdate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutoUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutoUpdateResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "auto-update-controller"
+        ],
+        "operationId": "removeAutoUpdate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutoUpdateDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/user": {
+      "post": {
+        "tags": [
+          "client-controller"
+        ],
+        "operationId": "getUserInfo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserInfoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/autoupdate": {
+      "post": {
+        "tags": [
+          "client-controller"
+        ],
+        "operationId": "getAutoUpdateJobs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserAutoUpdatesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserAutoUpdatesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/report": {
+      "post": {
+        "tags": [
+          "report-controller"
+        ],
+        "operationId": "getGradesReport",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/register": {
+      "post": {
+        "tags": [
+          "auth-controller"
+        ],
+        "operationId": "registerUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "auth-controller"
+        ],
+        "operationId": "authUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login/refreshToken": {
+      "post": {
+        "tags": [
+          "auth-controller"
+        ],
+        "operationId": "refreshToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/grades": {
+      "post": {
+        "tags": [
+          "grades-controller"
+        ],
+        "operationId": "getGrades",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GradesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GradesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/grades/{tableId}/xlsx": {
+      "post": {
+        "tags": [
+          "grades-controller"
+        ],
+        "operationId": "getGradesExcelTable",
+        "parameters": [
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/grades/{tableId}/googleSheets": {
+      "post": {
+        "tags": [
+          "grades-controller"
+        ],
+        "operationId": "getGradesGoogleSheets",
+        "parameters": [
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleSheetsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddNewKeyRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GOOGLE_SHEETS",
+              "YANDEX_CONTEST"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "key",
+          "type",
+          "username"
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "AutoUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "contestId": {
+            "type": "string"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "yandexKey": {
+            "type": "string"
+          },
+          "credentialsGoogle": {
+            "type": "string"
+          },
+          "spreadsheetUrl": {
+            "type": "string"
+          },
+          "sheetName": {
+            "type": "string"
+          },
+          "cronExpression": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contestId",
+          "credentialsGoogle",
+          "cronExpression",
+          "participants",
+          "sheetName",
+          "spreadsheetUrl",
+          "yandexKey"
+        ]
+      },
+      "AutoUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "GetUserInfoRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "GetUserInfoResponse": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "GetAllUserKeysRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GOOGLE_SHEETS",
+              "YANDEX_CONTEST"
+            ]
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "GetAllUserKeysResponse": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyInfo"
+            }
+          }
+        },
+        "required": [
+          "keys"
+        ]
+      },
+      "KeyInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "key": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GOOGLE_SHEETS",
+              "YANDEX_CONTEST"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "GetUserAutoUpdatesRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "AutoUpdateInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cron": {
+            "type": "string"
+          },
+          "updateUrl": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PAUSED",
+              "DISABLED"
+            ]
+          }
+        },
+        "required": [
+          "cron",
+          "id",
+          "ownerId",
+          "status",
+          "updateUrl"
+        ]
+      },
+      "GetUserAutoUpdatesResponse": {
+        "type": "object",
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AutoUpdateInfo"
+            }
+          }
+        },
+        "required": [
+          "tasks"
+        ]
+      },
+      "ReportRequest": {
+        "type": "object",
+        "properties": {
+          "contestId": {
+            "type": "string"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "yandexKey": {
+            "type": "string"
+          },
+          "isPlagiatCheckNeeded": {
+            "type": "boolean"
+          },
+          "mossKey": {
+            "type": "string"
+          },
+          "saveFormat": {
+            "type": "string",
+            "enum": [
+              "PDF",
+              "MD"
+            ]
+          }
+        },
+        "required": [
+          "contestId",
+          "isPlagiatCheckNeeded",
+          "participants",
+          "saveFormat",
+          "yandexKey"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 5
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 5
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 5
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "username"
+        ]
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "authToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "authToken",
+          "refreshToken",
+          "tokenType"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 5
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 5
+          }
+        },
+        "required": [
+          "password",
+          "username"
+        ]
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "GradesRequest": {
+        "type": "object",
+        "properties": {
+          "contestId": {
+            "type": "string"
+          },
+          "participantsList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "yandexKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contestId",
+          "participantsList",
+          "yandexKey"
+        ]
+      },
+      "GradesResponse": {
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "results": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        }
+      },
+      "GoogleSheetsRequest": {
+        "type": "object",
+        "properties": {
+          "googleServiceAccountCredentials": {
+            "type": "string"
+          },
+          "spreadsheetUrl": {
+            "type": "string"
+          },
+          "listName": {
+            "type": "string"
+          }
+        }
+      },
+      "DeleteKeyRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "keyId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "keyId",
+          "username"
+        ]
+      },
+      "AutoUpdateDeleteRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    }
+  }
+}
